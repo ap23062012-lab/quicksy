@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 `   1# QUICKSY Android App
 
 Kotlin-based Android application with Jetpack Compose UI.
@@ -83,3 +84,7 @@ app/src/main/
 **More documentation:** See root `docs/` folder
 123 x 12
 
+=======
+# quicksy
+Quicksy full stack app
+>>>>>>> 6929c6e1ab455de1e28bc30562bb7a54731d6ed2
