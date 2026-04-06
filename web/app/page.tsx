@@ -8,7 +8,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/v1/health")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/health`)
       .then((res) => {
         if (!res.ok) throw new Error(`status ${res.status}`);
         return res.json();
