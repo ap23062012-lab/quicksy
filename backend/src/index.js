@@ -54,7 +54,7 @@ const PORT = process.env.PORT || 5000;
 
 // Start server
 const start = async () => {
-  await initializeDatabase();
+  // await initializeDatabase(); // temporarily disabled
   app.listen(PORT, () => {
     console.log(`✓ QUICKSY Backend running on port ${PORT}`);
     console.log(`  Health check: http://localhost:${PORT}/api/v1/health`);
