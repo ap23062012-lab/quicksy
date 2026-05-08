@@ -1,17 +1,24 @@
-const express = require('express');
+const express = require("express");
+
 const router = express.Router();
 
-// Placeholder auth routes
-router.post('/register', (req, res) => {
-  res.json({ message: 'Register endpoint - TODO' });
-});
+// LOGIN ROUTE
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
 
-router.post('/login', (req, res) => {
-  res.json({ message: 'Login endpoint - TODO' });
-});
+  // Demo login
+  if (email === "admin@gmail.com" && password === "123456") {
+    return res.status(200).json({
+      message: "Login successful",
+      user: {
+        email,
+      },
+    });
+  }
 
-router.post('/logout', (req, res) => {
-  res.json({ message: 'Logout endpoint - TODO' });
+  return res.status(401).json({
+    message: "Invalid email or password",
+  });
 });
 
 module.exports = router;
