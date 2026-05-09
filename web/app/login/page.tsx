@@ -31,6 +31,8 @@ export default function LoginPage() {
 
       if (res.ok) {
         setMessage("✅ Login successful");
+
+window.location.href = "/dashboard";
       } else {
         setMessage(`❌ ${data.message || "Login failed"}`);
       }
