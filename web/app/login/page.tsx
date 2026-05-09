@@ -32,9 +32,9 @@ export default function LoginPage() {
       if (res.ok) {
         setMessage("✅ Login successful");
 
-window.location.href = "/dashboard";
+        window.location.href = "/dashboard";
       } else {
-        setMessage(`❌ ${data.message || "Login failed"}`);
+        setMessage(`❌ ${data.message}`);
       }
     } catch (error) {
       setMessage("❌ Backend server error");
@@ -48,7 +48,7 @@ window.location.href = "/dashboard";
         className="bg-white p-8 rounded-xl shadow-md w-[350px]"
       >
         <h1 className="text-2xl font-bold mb-6 text-center">
-          Login to Quicksy
+          Login
         </h1>
 
         <input

@@ -1,8 +1,13 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { sequelize, testConnection } = require('./config/database');
-const models = require('./models');
+require("dotenv").config();
+
+const express = require("express");
+const cors = require("cors");
+
+const { sequelize, testConnection } = require("./config/database");
+
+require("./models/User");
+
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
@@ -11,59 +16,57 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Database initialization
+// Health Route
+app.get("/api/v1/health", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    service: "QUICKSY Backend API",
+  });
+});
+
+// API Routes
+app.use("/api/v1/auth", authRoutes);
+
+// Error Middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+
+  res.status(500).json({
+    message: "Server Error",
+  });
+});
+
+// Database Initialization
 const initializeDatabase = async () => {
   try {
     await testConnection();
-    // Sync models with database (use { force: true } only in development to reset)
-    await sequelize.sync({ alter: true });
-    console.log('✓ Database models synchronized');
+
+    await sequelize.sync();
+
+    console.log("✓ Users table ready");
   } catch (error) {
-    console.error('✗ Database initialization failed:', error.message);
+    console.error("✗ Database initialization failed:", error.message);
+
     process.exit(1);
   }
 };
 
-// Routes (to be implemented)
-const authRoutes = require('./routes/auth');
-
-app.get('/api/v1/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    service: 'QUICKSY Backend API',
-    database: 'Connected'
-  });
-});
-
-// API routes
-app.use('/api/v1/auth', authRoutes);
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    error: {
-      message: err.message,
-      status: err.status || 500
-    }
-  });
-});
-
 const PORT = process.env.PORT || 5000;
 
-// Start server
-const start = async () => {
-  // await initializeDatabase(); // temporarily disabled
+// Start Server
+const startServer = async () => {
+  await initializeDatabase();
+
   app.listen(PORT, () => {
     console.log(`✓ QUICKSY Backend running on port ${PORT}`);
-    console.log(`  Health check: http://localhost:${PORT}/api/v1/health`);
+
+    console.log(
+      `Health check: http://localhost:${PORT}/api/v1/health`
+    );
   });
 };
 
-start().catch((error) => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});
+startServer();
 
 module.exports = app;
