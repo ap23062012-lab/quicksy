@@ -29,6 +29,8 @@ router.post("/signup", async (req, res) => {
       user,
     });
   } catch (error) {
+    console.error(error);
+
     return res.status(500).json({
       message: "Server error",
     });
@@ -58,6 +60,39 @@ router.post("/login", async (req, res) => {
       user,
     });
   } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
+
+// RESET PASSWORD ROUTE
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    const user = await User.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    user.password = newPassword;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
     return res.status(500).json({
       message: "Server error",
     });
