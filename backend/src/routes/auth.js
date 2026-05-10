@@ -1,4 +1,5 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const router = express.Router();
@@ -37,7 +38,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// LOGIN ROUTE
+// LOGIN ROUTE WITH JWT
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -55,8 +56,20 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
     return res.status(200).json({
       message: "Login successful",
+      token,
       user,
     });
   } catch (error) {

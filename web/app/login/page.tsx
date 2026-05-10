@@ -30,6 +30,8 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok) {
+        localStorage.setItem("token", data.token);
+
         setMessage("✅ Login successful");
 
         window.location.href = "/dashboard";
