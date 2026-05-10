@@ -74,8 +74,19 @@ export default function LoginPage() {
           Login
         </button>
 
+        <p className="text-center mt-4">
+          <a
+            href="/forgot-password"
+            className="text-blue-600"
+          >
+            Forgot Password?
+          </a>
+        </p>
+
         {message && (
-          <p className="mt-4 text-center">{message}</p>
+          <p className="mt-4 text-center">
+            {message}
+          </p>
         )}
       </form>
     </div>
