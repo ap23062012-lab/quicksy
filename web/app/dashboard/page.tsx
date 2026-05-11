@@ -1,6 +1,22 @@
 "use client";
 
+import { useEffect } from "react";
+
 export default function DashboardPage() {
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = "/login";
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+
+    window.location.href = "/login";
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <div className="bg-white p-10 rounded-xl shadow-md text-center">
@@ -9,14 +25,12 @@ export default function DashboardPage() {
         </h1>
 
         <p className="text-gray-600 mb-6">
-          You are successfully logged in.
+          Protected Dashboard
         </p>
 
         <button
+          onClick={handleLogout}
           className="bg-black text-white px-6 py-3 rounded-lg"
-          onClick={() => {
-            window.location.href = "/login";
-          }}
         >
           Logout
         </button>
