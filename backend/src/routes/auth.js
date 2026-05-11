@@ -1,5 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
 const User = require("../models/User");
 
 const router = express.Router();
@@ -19,10 +21,13 @@ router.post("/signup", async (req, res) => {
       });
     }
 
+    // HASH PASSWORD
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.create({
       name,
       email,
-      password,
+      password: hashedPassword,
     });
 
     return res.status(201).json({
@@ -38,16 +43,13 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// LOGIN ROUTE WITH JWT
+// LOGIN ROUTE
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({
-      where: {
-        email,
-        password,
-      },
+      where: { email },
     });
 
     if (!user) {
@@ -56,6 +58,19 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    // COMPARE PASSWORD
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!isMatch) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+
+    // CREATE JWT
     const token = jwt.sign(
       {
         id: user.id,
@@ -96,7 +111,13 @@ router.post("/reset-password", async (req, res) => {
       });
     }
 
-    user.password = newPassword;
+    // HASH NEW PASSWORD
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      10
+    );
+
+    user.password = hashedPassword;
 
     await user.save();
 
