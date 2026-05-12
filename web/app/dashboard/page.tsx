@@ -28,12 +28,20 @@ export default function DashboardPage() {
           Protected Dashboard
         </p>
 
-        <button
-          onClick={handleLogout}
-          className="bg-black text-white px-6 py-3 rounded-lg"
-        >
-          Logout
-        </button>
+        <div className="flex flex-col gap-4">
+          <a href="/profile">
+            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg w-full">
+              View Profile
+            </button>
+          </a>
+
+          <button
+            onClick={handleLogout}
+            className="bg-black text-white px-6 py-3 rounded-lg"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );
