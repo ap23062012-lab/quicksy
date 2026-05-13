@@ -1,72 +1,53 @@
-require("dotenv").config();
-
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config();
 
 const { sequelize, testConnection } = require("./config/database");
-
-require("./models/User");
 
 const authRoutes = require("./routes/auth");
 
 const app = express();
 
-// Middleware
+const PORT = process.env.PORT || 10000;
+
+// MIDDLEWARE
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "50mb" }));
 
-// Health Route
-app.get("/api/v1/health", (req, res) => {
-  res.json({
-    status: "OK",
-    timestamp: new Date().toISOString(),
-    service: "QUICKSY Backend API",
-  });
-});
-
-// API Routes
+// ROUTES
 app.use("/api/v1/auth", authRoutes);
 
-// Error Middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-
-  res.status(500).json({
-    message: "Server Error",
+// HEALTH CHECK
+app.get("/api/v1/health", (req, res) => {
+  res.json({
+    message: "QUICKSY Backend Running",
   });
 });
 
-// Database Initialization
-const initializeDatabase = async () => {
+// START SERVER
+const startServer = async () => {
   try {
+    // DATABASE CONNECTION
     await testConnection();
 
-    await sequelize.sync();
+    // AUTO UPDATE TABLES
+    await sequelize.sync({ alter: true });
 
-    console.log("✓ Users table ready");
+    app.listen(PORT, () => {
+      console.log(
+        `✓ QUICKSY Backend running on port ${PORT}`
+      );
+
+      console.log(
+        `Health check: http://localhost:${PORT}/api/v1/health`
+      );
+    });
   } catch (error) {
-    console.error("✗ Database initialization failed:", error.message);
-
-    process.exit(1);
+    console.error(
+      "✗ Database initialization failed:",
+      error.message
+    );
   }
 };
 
-const PORT = process.env.PORT || 5000;
-
-// Start Server
-const startServer = async () => {
-  await initializeDatabase();
-
-  app.listen(PORT, () => {
-    console.log(`✓ QUICKSY Backend running on port ${PORT}`);
-
-    console.log(
-      `Health check: http://localhost:${PORT}/api/v1/health`
-    );
-  });
-};
-
 startServer();
-
-module.exports = app;
