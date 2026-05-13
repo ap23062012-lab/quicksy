@@ -58,7 +58,7 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // COMPARE PASSWORD
+    // CHECK PASSWORD
     const isMatch = await bcrypt.compare(
       password,
       user.password
@@ -70,7 +70,7 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // CREATE JWT
+    // CREATE JWT TOKEN
     const token = jwt.sign(
       {
         id: user.id,
@@ -123,6 +123,37 @@ router.post("/reset-password", async (req, res) => {
 
     return res.status(200).json({
       message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
+
+// UPLOAD PROFILE IMAGE
+router.post("/upload-profile-image", async (req, res) => {
+  try {
+    const { email, profileImage } = req.body;
+
+    const user = await User.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    user.profileImage = profileImage;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Profile image uploaded",
     });
   } catch (error) {
     console.error(error);
