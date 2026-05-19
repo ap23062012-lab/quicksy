@@ -21,7 +21,6 @@ router.post("/signup", async (req, res) => {
       });
     }
 
-    // HASH PASSWORD
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -58,7 +57,6 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // CHECK PASSWORD
     const isMatch = await bcrypt.compare(
       password,
       user.password
@@ -70,7 +68,6 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // CREATE JWT TOKEN
     const token = jwt.sign(
       {
         id: user.id,
@@ -96,7 +93,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// RESET PASSWORD ROUTE
+// RESET PASSWORD
 router.post("/reset-password", async (req, res) => {
   try {
     const { email, newPassword } = req.body;
@@ -111,7 +108,6 @@ router.post("/reset-password", async (req, res) => {
       });
     }
 
-    // HASH NEW PASSWORD
     const hashedPassword = await bcrypt.hash(
       newPassword,
       10
@@ -154,6 +150,33 @@ router.post("/upload-profile-image", async (req, res) => {
 
     return res.status(200).json({
       message: "Profile image uploaded",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
+
+// GET USER PROFILE
+router.get("/profile/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const user = await User.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      user,
     });
   } catch (error) {
     console.error(error);
