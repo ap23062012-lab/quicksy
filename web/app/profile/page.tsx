@@ -26,6 +26,16 @@ export default function ProfilePage() {
 
       setEmail(decoded.email);
       setUserId(decoded.id);
+
+      fetch(
+        `https://quicksy-5xdh.onrender.com/api/v1/auth/profile/${decoded.email}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.user?.profileImage) {
+            setProfileImage(data.user.profileImage);
+          }
+        });
     } catch (error) {
       localStorage.removeItem("token");
 
