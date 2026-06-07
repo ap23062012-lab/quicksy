@@ -19,20 +19,26 @@ router.get("/", async (req, res) => {
 // ADD PRODUCT
 router.post("/", async (req, res) => {
   try {
-    const { name, description, price, image } = req.body;
-
-    const product = await Product.create({
+    const {
       name,
       description,
       price,
-      image,
+      category,
+    } = req.body;
+
+    const product = await Product.create({
+      seller_id: "00000000-0000-0000-0000-000000000001",
+      name,
+      description,
+      price,
+      category,
     });
 
     res.status(201).json(product);
   } catch (error) {
-    console.error(error);
+    console.error("PRODUCT ERROR:", error);
     res.status(500).json({
-      message: "Failed to add product",
+      message: error.message,
     });
   }
 });
