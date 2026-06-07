@@ -5,6 +5,7 @@ require("dotenv").config();
 const { sequelize, testConnection } = require("./config/database");
 
 const authRoutes = require("./routes/auth");
+const productRoutes = require("./routes/product");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.json({ limit: "50mb" }));
 
 // ROUTES
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/products", productRoutes);
 
 // HEALTH CHECK
 app.get("/api/v1/health", (req, res) => {
