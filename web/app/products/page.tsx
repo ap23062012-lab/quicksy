@@ -20,6 +20,32 @@ export default function ProductsPage() {
       .catch((err) => console.error(err));
   }, []);
 
+  const addToCart = async (productId: number) => {
+    try {
+      const res = await fetch(
+        "https://quicksy-5xdh.onrender.com/api/v1/cart",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId,
+          }),
+        }
+      );
+
+      if (res.ok) {
+        alert("Added to cart!");
+      } else {
+        alert("Failed to add to cart");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-4xl font-bold text-center mb-8">
@@ -52,7 +78,10 @@ export default function ProductsPage() {
               ₹{product.price}
             </p>
 
-            <button className="bg-black text-white px-4 py-2 rounded-lg mt-4 w-full">
+            <button
+              onClick={() => addToCart(product.id)}
+              className="bg-black text-white px-4 py-2 rounded-lg mt-4 w-full"
+            >
               Add to Cart
             </button>
           </div>
