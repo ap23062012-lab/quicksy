@@ -22,12 +22,15 @@ export default function ProductsPage() {
 
   const addToCart = async (productId: number) => {
     try {
+      const token = localStorage.getItem("token");
+
       const res = await fetch(
         "https://quicksy-5xdh.onrender.com/api/v1/cart",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             productId,
@@ -35,10 +38,12 @@ export default function ProductsPage() {
         }
       );
 
+      const data = await res.json();
+
       if (res.ok) {
         alert("Added to cart!");
       } else {
-        alert("Failed to add to cart");
+        alert(data.message || "Failed to add to cart");
       }
     } catch (error) {
       console.error(error);
