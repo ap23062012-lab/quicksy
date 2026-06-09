@@ -7,11 +7,13 @@ const { sequelize, testConnection } = require("./config/database");
 const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/product");
 const cartRoutes = require("./routes/cart");
+const addressRoutes = require("./routes/address");
 
 // LOAD MODELS
 require("./models/User");
 require("./models/Product");
 require("./models/Cart");
+require("./models/Address");
 
 const app = express();
 
@@ -25,6 +27,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
+app.use("/api/v1/address", addressRoutes);
 
 // HEALTH CHECK
 app.get("/api/v1/health", (req, res) => {
