@@ -52,6 +52,12 @@ export default function DashboardPage() {
             </button>
           </a>
 
+          <a href="/address">
+  <button className="bg-red-600 text-white px-6 py-3 rounded-lg w-full">
+    My Address
+  </button>
+</a>
+
           <button
             onClick={handleLogout}
             className="bg-black text-white px-6 py-3 rounded-lg"
