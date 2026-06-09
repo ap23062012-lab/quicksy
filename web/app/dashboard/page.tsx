@@ -46,6 +46,12 @@ export default function DashboardPage() {
             </button>
           </a>
 
+          <a href="/cart">
+            <button className="bg-orange-600 text-white px-6 py-3 rounded-lg w-full">
+              My Cart
+            </button>
+          </a>
+
           <button
             onClick={handleLogout}
             className="bg-black text-white px-6 py-3 rounded-lg"
