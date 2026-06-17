@@ -82,7 +82,11 @@ export default function CartPage() {
             <button
               className="bg-green-600 text-white px-6 py-3 rounded-lg mt-4"
             >
-              Proceed to Checkout
+              <a href="/checkout">
+  <button className="bg-green-600 text-white px-6 py-3 rounded-lg mt-4">
+    Proceed to Checkout
+  </button>
+</a>
             </button>
           </div>
         </>
