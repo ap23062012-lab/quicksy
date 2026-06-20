@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 export default function CheckoutPage() {
   const [address, setAddress] = useState<any>(null);
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [items, setItems] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
@@ -14,39 +14,75 @@ export default function CheckoutPage() {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
+      const buyNowProductId =
+        localStorage.getItem("buyNowProductId");
 
-      const [addressRes, cartRes] = await Promise.all([
-        fetch(
-          "https://quicksy-5xdh.onrender.com/api/v1/address",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
+      // Fetch address
+      const addressRes = await fetch(
+        "https://quicksy-5xdh.onrender.com/api/v1/address",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const addressData = await addressRes.json();
+      setAddress(addressData[0] || null);
+
+      // If Buy Now was clicked
+      if (buyNowProductId) {
+        const productsRes = await fetch(
+          "https://quicksy-5xdh.onrender.com/api/v1/products"
+        );
+
+        const products = await productsRes.json();
+
+        const product = products.find(
+          (p: any) =>
+            p.id.toString() === buyNowProductId
+        );
+
+        if (product) {
+          setItems([
+            {
+              Product: product,
+              quantity: 1,
             },
-          }
-        ),
-        fetch(
+          ]);
+
+          setTotal(Number(product.price));
+        }
+
+        // Remove after use
+        localStorage.removeItem(
+          "buyNowProductId"
+        );
+      } else {
+        // Normal Cart Checkout
+        const cartRes = await fetch(
           "https://quicksy-5xdh.onrender.com/api/v1/cart",
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
-        ),
-      ]);
+        );
 
-      const addressData = await addressRes.json();
-      const cartData = await cartRes.json();
+        const cartData = await cartRes.json();
 
-      setAddress(addressData[0] || null);
-      setCartItems(cartData);
+        setItems(cartData);
 
-      let sum = 0;
+        let sum = 0;
 
-      cartData.forEach((item: any) => {
-        sum += Number(item.Product?.price || 0);
-      });
+        cartData.forEach((item: any) => {
+          sum += Number(
+            item.Product?.price || 0
+          );
+        });
 
-      setTotal(sum);
+        setTotal(sum);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -54,7 +90,7 @@ export default function CheckoutPage() {
 
   const placeOrder = () => {
     alert(
-      "Order placed successfully! (Payment coming next)"
+      "Order placed successfully! Payment integration coming next."
     );
   };
 
@@ -98,9 +134,9 @@ export default function CheckoutPage() {
               Order Summary
             </h2>
 
-            {cartItems.map((item) => (
+            {items.map((item, index) => (
               <div
-                key={item.id}
+                key={index}
                 className="flex justify-between mb-2"
               >
                 <span>
