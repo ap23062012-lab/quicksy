@@ -51,6 +51,15 @@ export default function ProductsPage() {
     }
   };
 
+  const buyNow = (productId: number) => {
+    localStorage.setItem(
+      "buyNowProductId",
+      productId.toString()
+    );
+
+    window.location.href = "/checkout";
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-4xl font-bold text-center mb-8">
@@ -83,12 +92,21 @@ export default function ProductsPage() {
               ₹{product.price}
             </p>
 
-            <button
-              onClick={() => addToCart(product.id)}
-              className="bg-black text-white px-4 py-2 rounded-lg mt-4 w-full"
-            >
-              Add to Cart
-            </button>
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => addToCart(product.id)}
+                className="bg-black text-white px-4 py-2 rounded-lg w-1/2"
+              >
+                Add to Cart
+              </button>
+
+              <button
+                onClick={() => buyNow(product.id)}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg w-1/2"
+              >
+                Buy Now
+              </button>
+            </div>
           </div>
         ))}
       </div>
