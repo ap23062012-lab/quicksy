@@ -26,7 +26,7 @@ export default function OrdersPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setOrders(data);
+        setOrders(Array.isArray(data) ? data : []);
       } else {
         alert(data.message || "Failed to load orders");
       }
@@ -58,31 +58,34 @@ export default function OrdersPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {orders.map((order) => (
+          {orders.map((order, orderIndex) => (
             <div
-              key={order.id}
+              key={orderIndex}
               className="bg-white p-6 rounded-xl shadow"
             >
               <div className="flex justify-between mb-4">
                 <div>
                   <h2 className="text-xl font-bold">
-                    Order #{order.id.slice(0, 8)}
+                    Order #
+                    {String(order.id || orderIndex).slice(0, 8)}
                   </h2>
 
                   <p className="text-gray-600">
-                    Status: {order.status}
+                    Status: {order.status || "Pending"}
                   </p>
                 </div>
 
                 <div className="text-right">
                   <p className="font-bold">
-                    ₹{order.totalAmount}
+                    ₹{order.totalAmount || 0}
                   </p>
 
                   <p className="text-gray-500">
-                    {new Date(
-                      order.createdAt
-                    ).toLocaleDateString()}
+                    {order.createdAt
+                      ? new Date(
+                          order.createdAt
+                        ).toLocaleDateString()
+                      : "Unknown date"}
                   </p>
                 </div>
               </div>
@@ -93,22 +96,28 @@ export default function OrdersPage() {
                 Products
               </h3>
 
-              {order.products.map(
-                (product: any, index: number) => (
-                  <div
-                    key={index}
-                    className="flex justify-between mb-2"
-                  >
-                    <span>
-                      {product.name} ×{" "}
-                      {product.quantity}
-                    </span>
+              {Array.isArray(order.products) ? (
+                order.products.map(
+                  (product: any, index: number) => (
+                    <div
+                      key={index}
+                      className="flex justify-between mb-2"
+                    >
+                      <span>
+                        {product.name || "Unknown Product"} ×{" "}
+                        {product.quantity || 1}
+                      </span>
 
-                    <span>
-                      ₹{product.price}
-                    </span>
-                  </div>
+                      <span>
+                        ₹{product.price || 0}
+                      </span>
+                    </div>
+                  )
                 )
+              ) : (
+                <p className="text-gray-500">
+                  No products found
+                </p>
               )}
             </div>
           ))}
