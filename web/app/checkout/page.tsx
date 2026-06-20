@@ -25,9 +25,6 @@ const placeOrder = async () => {
 
     if (res.ok) {
       alert("Order placed successfully!");
-
-      // Optional: redirect later to order history
-      // window.location.href = "/orders";
     } else {
       alert(data.message || "Failed to place order");
     }
