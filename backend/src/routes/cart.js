@@ -45,5 +45,33 @@ router.post("/", authMiddleware, async (req, res) => {
     });
   }
 });
+// REMOVE ITEM FROM CART
+router.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const item = await Cart.findOne({
+      where: {
+        id: req.params.id,
+        UserId: req.user.id,
+      },
+    });
 
+    if (!item) {
+      return res.status(404).json({
+        message: "Cart item not found",
+      });
+    }
+
+    await item.destroy();
+
+    res.json({
+      message: "Item removed from cart",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
 module.exports = router;
