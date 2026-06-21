@@ -74,4 +74,43 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     });
   }
 });
+// UPDATE QUANTITY
+router.put("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { action } = req.body;
+
+    const item = await Cart.findOne({
+      where: {
+        id: req.params.id,
+        UserId: req.user.id,
+      },
+    });
+
+    if (!item) {
+      return res.status(404).json({
+        message: "Cart item not found",
+      });
+    }
+
+    if (action === "increase") {
+      item.quantity += 1;
+    }
+
+    if (action === "decrease") {
+      if (item.quantity > 1) {
+        item.quantity -= 1;
+      }
+    }
+
+    await item.save();
+
+    res.json(item);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
 module.exports = router;
