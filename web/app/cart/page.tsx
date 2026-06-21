@@ -38,6 +38,33 @@ export default function CartPage() {
     }
   };
 
+  const updateQuantity = async (
+    id: number,
+    action: "increase" | "decrease"
+  ) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `https://quicksy-5xdh.onrender.com/api/v1/cart/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ action }),
+        }
+      );
+
+      if (res.ok) {
+        fetchCart();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const removeFromCart = async (id: number) => {
     try {
       const token = localStorage.getItem("token");
@@ -52,23 +79,18 @@ export default function CartPage() {
         }
       );
 
-      const data = await res.json();
-
       if (res.ok) {
-        alert("Item removed");
         fetchCart();
-      } else {
-        alert(data.message || "Failed to remove item");
       }
     } catch (error) {
       console.error(error);
-      alert("Server error");
     }
   };
 
   const total = cart.reduce(
     (sum, item) =>
-      sum + Number(item.Product?.price || 0) * item.quantity,
+      sum +
+      Number(item.Product?.price || 0) * item.quantity,
     0
   );
 
@@ -87,7 +109,7 @@ export default function CartPage() {
       </h1>
 
       {cart.length === 0 ? (
-        <div className="text-center text-gray-600">
+        <div className="text-center">
           Cart is empty
         </div>
       ) : (
@@ -102,20 +124,48 @@ export default function CartPage() {
                   {item.Product?.name}
                 </h2>
 
-                <p className="text-gray-600 mt-2">
+                <p className="text-gray-600">
                   {item.Product?.description}
                 </p>
 
-                <p className="text-xl font-bold mt-4">
+                <p className="text-xl font-bold mt-3">
                   ₹{item.Product?.price}
                 </p>
 
-                <p className="mt-2">
-                  Quantity: {item.quantity}
-                </p>
+                <div className="flex items-center gap-4 mt-4">
+                  <button
+                    onClick={() =>
+                      updateQuantity(
+                        item.id,
+                        "decrease"
+                      )
+                    }
+                    className="bg-gray-300 px-4 py-2 rounded"
+                  >
+                    -
+                  </button>
+
+                  <span className="text-xl font-bold">
+                    {item.quantity}
+                  </span>
+
+                  <button
+                    onClick={() =>
+                      updateQuantity(
+                        item.id,
+                        "increase"
+                      )
+                    }
+                    className="bg-gray-300 px-4 py-2 rounded"
+                  >
+                    +
+                  </button>
+                </div>
 
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() =>
+                    removeFromCart(item.id)
+                  }
                   className="bg-red-600 text-white px-4 py-2 rounded-lg mt-4"
                 >
                   Remove
