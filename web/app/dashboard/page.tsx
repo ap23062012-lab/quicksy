@@ -1,18 +1,30 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
+  const [role, setRole] = useState("");
+
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (!token) {
       window.location.href = "/login";
+      return;
+    }
+
+    const savedRole = localStorage.getItem("role");
+
+    if (savedRole) {
+      setRole(savedRole);
     }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+
     window.location.href = "/login";
   };
 
@@ -40,11 +52,21 @@ export default function DashboardPage() {
             </button>
           </a>
 
-          <a href="/add-product">
-            <button className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full">
-              Add Product
-            </button>
-          </a>
+          {role === "seller" && (
+            <a href="/add-product">
+              <button className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full">
+                Add Product
+              </button>
+            </a>
+          )}
+
+          {role === "seller" && (
+            <a href="/seller">
+              <button className="bg-yellow-600 text-white px-6 py-3 rounded-lg w-full">
+                Seller Dashboard
+              </button>
+            </a>
+          )}
 
           <a href="/cart">
             <button className="bg-orange-600 text-white px-6 py-3 rounded-lg w-full">
@@ -53,16 +75,16 @@ export default function DashboardPage() {
           </a>
 
           <a href="/address">
-  <button className="bg-red-600 text-white px-6 py-3 rounded-lg w-full">
-    My Address
-  </button>
-</a>
+            <button className="bg-red-600 text-white px-6 py-3 rounded-lg w-full">
+              My Address
+            </button>
+          </a>
 
-<a href="/orders">
-  <button className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full">
-    Your Orders
-  </button>
-</a>
+          <a href="/orders">
+            <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg w-full">
+              Your Orders
+            </button>
+          </a>
 
           <button
             onClick={handleLogout}
