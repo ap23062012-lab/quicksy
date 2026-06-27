@@ -6,6 +6,7 @@ export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("customer");
   const [message, setMessage] = useState("");
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -25,6 +26,7 @@ export default function SignupPage() {
             name,
             email,
             password,
+            role,
           }),
         }
       );
@@ -74,6 +76,15 @@ export default function SignupPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        <select
+          className="w-full border p-3 rounded mb-4"
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+        >
+          <option value="customer">Customer</option>
+          <option value="seller">Seller</option>
+        </select>
 
         <button
           type="submit"
