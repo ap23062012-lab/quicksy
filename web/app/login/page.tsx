@@ -32,6 +32,17 @@ export default function LoginPage() {
       if (res.ok) {
         localStorage.setItem("token", data.token);
 
+        // SAVE USER DETAILS
+        localStorage.setItem(
+          "user",
+          JSON.stringify(data.user)
+        );
+
+        localStorage.setItem(
+          "role",
+          data.user.role
+        );
+
         setMessage("✅ Login successful");
 
         window.location.href = "/dashboard";
