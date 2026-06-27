@@ -9,7 +9,7 @@ const router = express.Router();
 // SIGNUP ROUTE
 router.post("/signup", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     const existingUser = await User.findOne({
       where: { email },
@@ -24,10 +24,11 @@ router.post("/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
+  name,
+  email,
+  password: hashedPassword,
+  role: role || "customer",
+});
 
     return res.status(201).json({
       message: "Account created successfully",
