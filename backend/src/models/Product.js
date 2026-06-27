@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/database");
+const User = require("./User");
 
 const Product = sequelize.define("Product", {
   name: {
@@ -27,5 +28,9 @@ const Product = sequelize.define("Product", {
     allowNull: true,
   },
 });
+
+// RELATIONSHIP
+User.hasMany(Product);
+Product.belongsTo(User);
 
 module.exports = Product;

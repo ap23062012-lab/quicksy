@@ -1,5 +1,6 @@
 const express = require("express");
 const Product = require("../models/Product");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -7,9 +8,11 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const products = await Product.findAll();
+
     res.json(products);
   } catch (error) {
     console.error(error);
+
     res.status(500).json({
       message: "Server error",
     });
@@ -17,26 +20,36 @@ router.get("/", async (req, res) => {
 });
 
 // ADD PRODUCT
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const {
       name,
       description,
       price,
       category,
+      image,
     } = req.body;
 
+    // Only sellers can add products
+    if (req.user.role !== "seller") {
+      return res.status(403).json({
+        message: "Only sellers can add products",
+      });
+    }
+
     const product = await Product.create({
-      seller_id: "00000000-0000-0000-0000-000000000001",
       name,
       description,
       price,
       category,
+      image,
+      UserId: req.user.id,
     });
 
     res.status(201).json(product);
   } catch (error) {
     console.error("PRODUCT ERROR:", error);
+
     res.status(500).json({
       message: error.message,
     });
