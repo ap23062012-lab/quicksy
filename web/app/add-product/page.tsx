@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function AddProductPage() {
   const [name, setName] = useState("");
@@ -9,36 +9,56 @@ export default function AddProductPage() {
   const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
 
+  useEffect(() => {
+    const role = localStorage.getItem("role");
+
+    // Only sellers can access this page
+    if (role !== "seller") {
+      alert("Only sellers can access this page");
+      window.location.href = "/dashboard";
+    }
+  }, []);
+
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
     e.preventDefault();
 
-    const res = await fetch(
-      "https://quicksy-5xdh.onrender.com/api/v1/products",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          description,
-          price,
-          image,
-        }),
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "https://quicksy-5xdh.onrender.com/api/v1/products",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name,
+            description,
+            price,
+            image,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Product added!");
+
+        setName("");
+        setDescription("");
+        setPrice("");
+        setImage("");
+      } else {
+        alert(data.message || "Failed to add product");
       }
-    );
-
-    if (res.ok) {
-      alert("Product added!");
-
-      setName("");
-      setDescription("");
-      setPrice("");
-      setImage("");
-    } else {
-      alert("Failed to add product");
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
     }
   };
 
