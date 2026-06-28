@@ -19,6 +19,29 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET SELLER PRODUCTS
+router.get(
+  "/my-products",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const products = await Product.findAll({
+        where: {
+          UserId: req.user.id,
+        },
+      });
+
+      res.json(products);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "Server error",
+      });
+    }
+  }
+);
+
 // ADD PRODUCT
 router.post("/", authMiddleware, async (req, res) => {
   try {
@@ -30,7 +53,6 @@ router.post("/", authMiddleware, async (req, res) => {
       image,
     } = req.body;
 
-    // Only sellers can add products
     if (req.user.role !== "seller") {
       return res.status(403).json({
         message: "Only sellers can add products",
