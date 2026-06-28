@@ -3,19 +3,27 @@
 import { useEffect, useState } from "react";
 
 export default function SellerPage() {
-  const [orders, setOrders] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchOrders();
+    const role = localStorage.getItem("role");
+
+    if (role !== "seller") {
+      alert("Only sellers can access this page");
+      window.location.href = "/dashboard";
+      return;
+    }
+
+    fetchProducts();
   }, []);
 
-  const fetchOrders = async () => {
+  const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "https://quicksy-5xdh.onrender.com/api/v1/order",
+        "https://quicksy-5xdh.onrender.com/api/v1/products/my-products",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -26,10 +34,13 @@ export default function SellerPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setOrders(Array.isArray(data) ? data : []);
+        setProducts(data);
+      } else {
+        alert(data.message || "Failed to load products");
       }
     } catch (error) {
       console.error(error);
+      alert("Server error");
     } finally {
       setLoading(false);
     }
@@ -38,7 +49,7 @@ export default function SellerPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading Orders...
+        Loading Seller Dashboard...
       </div>
     );
   }
@@ -49,58 +60,40 @@ export default function SellerPage() {
         Seller Dashboard
       </h1>
 
-      {orders.length === 0 ? (
-        <div className="text-center">
-          No Orders Yet
+      {products.length === 0 ? (
+        <div className="text-center text-gray-600">
+          No products added yet
         </div>
       ) : (
-        <div className="space-y-6">
-          {orders.map((order, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {products.map((product) => (
             <div
-              key={index}
+              key={product.id}
               className="bg-white p-6 rounded-xl shadow"
             >
-              <h2 className="text-xl font-bold mb-2">
-                Order #{String(order.id).slice(0, 8)}
+              {product.image && (
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                />
+              )}
+
+              <h2 className="text-xl font-bold">
+                {product.name}
               </h2>
 
-              <p>
-                <strong>Status:</strong>{" "}
-                {order.status || "Pending"}
+              <p className="text-gray-600 mt-2">
+                {product.description}
               </p>
 
-              <p>
-                <strong>Total:</strong> ₹
-                {order.totalAmount}
+              <p className="text-2xl font-bold mt-4">
+                ₹{product.price}
               </p>
 
-              <p>
-                <strong>Date:</strong>{" "}
-                {order.createdAt
-                  ? new Date(
-                      order.createdAt
-                    ).toLocaleDateString()
-                  : "Unknown"}
+              <p className="text-sm text-gray-500 mt-2">
+                Product ID: {product.id}
               </p>
-
-              <hr className="my-4" />
-
-              <h3 className="font-bold mb-2">
-                Products
-              </h3>
-
-              {Array.isArray(order.products) &&
-                order.products.map(
-                  (product: any, idx: number) => (
-                    <div
-                      key={idx}
-                      className="mb-2"
-                    >
-                      {product.name} ×{" "}
-                      {product.quantity}
-                    </div>
-                  )
-                )}
             </div>
           ))}
         </div>
