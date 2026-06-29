@@ -77,9 +77,9 @@ export default function CheckoutPage() {
         let sum = 0;
 
         cartData.forEach((item: any) => {
-          sum += Number(
-            item.Product?.price || 0
-          );
+          sum +=
+            Number(item.Product?.price || 0) *
+            item.quantity;
         });
 
         setTotal(sum);
@@ -103,9 +103,11 @@ export default function CheckoutPage() {
           },
           body: JSON.stringify({
             products: items.map((item: any) => ({
+              id: item.Product?.id,
               name: item.Product?.name,
               price: item.Product?.price,
               quantity: item.quantity,
+              sellerId: item.Product?.UserId,
             })),
             totalAmount: total,
           }),
@@ -177,11 +179,15 @@ export default function CheckoutPage() {
                 className="flex justify-between mb-2"
               >
                 <span>
-                  {item.Product?.name}
+                  {item.Product?.name} ×{" "}
+                  {item.quantity}
                 </span>
 
                 <span>
-                  ₹{item.Product?.price}
+                  ₹
+                  {Number(
+                    item.Product?.price || 0
+                  ) * item.quantity}
                 </span>
               </div>
             ))}
