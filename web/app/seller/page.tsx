@@ -38,6 +38,39 @@ export default function SellerPage() {
     }
   };
 
+  const updateStatus = async (
+    orderId: number,
+    status: string
+  ) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `https://quicksy-5xdh.onrender.com/api/v1/order/${orderId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Order status updated");
+        fetchSellerOrders();
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -110,6 +143,32 @@ export default function SellerPage() {
                   </div>
                 )
               )}
+
+              <div className="flex gap-4 mt-6">
+                <button
+                  onClick={() =>
+                    updateStatus(
+                      order.id,
+                      "Shipped"
+                    )
+                  }
+                  className="bg-blue-600 text-white px-4 py-2 rounded"
+                >
+                  Mark as Shipped
+                </button>
+
+                <button
+                  onClick={() =>
+                    updateStatus(
+                      order.id,
+                      "Delivered"
+                    )
+                  }
+                  className="bg-green-600 text-white px-4 py-2 rounded"
+                >
+                  Mark as Delivered
+                </button>
+              </div>
             </div>
           ))}
         </div>
