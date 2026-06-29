@@ -144,6 +144,53 @@ export default function SellerPage() {
                 )
               )}
 
+              <hr className="my-4" />
+
+              <h3 className="font-bold mb-2">
+                Delivery Address
+              </h3>
+
+              {order.shippingAddress ? (
+                <div className="text-gray-700">
+                  <p>
+                    <strong>Name:</strong>{" "}
+                    {order.shippingAddress.fullName}
+                  </p>
+
+                  <p>
+                    <strong>Phone:</strong>{" "}
+                    {order.shippingAddress.phone}
+                  </p>
+
+                  <p>
+                    <strong>House:</strong>{" "}
+                    {order.shippingAddress.house}
+                  </p>
+
+                  <p>
+                    <strong>Area:</strong>{" "}
+                    {order.shippingAddress.area}
+                  </p>
+
+                  <p>
+                    <strong>City:</strong>{" "}
+                    {order.shippingAddress.city}
+                  </p>
+
+                  <p>
+                    <strong>State:</strong>{" "}
+                    {order.shippingAddress.state}
+                  </p>
+
+                  <p>
+                    <strong>Pincode:</strong>{" "}
+                    {order.shippingAddress.pincode}
+                  </p>
+                </div>
+              ) : (
+                <p>No address found</p>
+              )}
+
               <div className="flex gap-4 mt-6">
                 <button
                   onClick={() =>
