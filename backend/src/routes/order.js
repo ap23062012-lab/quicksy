@@ -4,7 +4,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// GET MY ORDERS
+// GET MY ORDERS (CUSTOMER)
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const orders = await Order.findAll({
@@ -23,6 +23,45 @@ router.get("/", authMiddleware, async (req, res) => {
     });
   }
 });
+
+// GET SELLER ORDERS
+router.get(
+  "/seller-orders",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      // ONLY SELLERS CAN ACCESS
+      if (req.user.role !== "seller") {
+        return res.status(403).json({
+          message: "Only sellers can access this",
+        });
+      }
+
+      // GET ALL ORDERS
+      const allOrders = await Order.findAll({
+        order: [["createdAt", "DESC"]],
+      });
+
+      // FILTER ORDERS BELONGING TO THIS SELLER
+      const sellerOrders = allOrders.filter(
+        (order) =>
+          order.products &&
+          order.products.some(
+            (product) =>
+              product.sellerId === req.user.id
+          )
+      );
+
+      res.json(sellerOrders);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "Server error",
+      });
+    }
+  }
+);
 
 // CREATE ORDER
 router.post("/", authMiddleware, async (req, res) => {
