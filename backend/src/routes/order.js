@@ -105,13 +105,18 @@ router.put(
 // CREATE ORDER
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { products, totalAmount } = req.body;
+    const {
+  products,
+  totalAmount,
+  shippingAddress,
+} = req.body;
 
-    const order = await Order.create({
-      products,
-      totalAmount,
-      UserId: req.user.id,
-    });
+   const order = await Order.create({
+  products,
+  totalAmount,
+  shippingAddress,
+  UserId: req.user.id,
+});
 
     res.status(201).json(order);
   } catch (error) {

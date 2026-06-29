@@ -102,15 +102,26 @@ export default function CheckoutPage() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            products: items.map((item: any) => ({
-              id: item.Product?.id,
-              name: item.Product?.name,
-              price: item.Product?.price,
-              quantity: item.quantity,
-              sellerId: item.Product?.UserId,
-            })),
-            totalAmount: total,
-          }),
+  products: items.map((item: any) => ({
+    id: item.Product?.id,
+    name: item.Product?.name,
+    price: item.Product?.price,
+    quantity: item.quantity,
+    sellerId: item.Product?.UserId,
+  })),
+
+  totalAmount: total,
+
+  shippingAddress: {
+    fullName: address.fullName,
+    phone: address.phone,
+    house: address.house,
+    area: address.area,
+    city: address.city,
+    state: address.state,
+    pincode: address.pincode,
+  },
+}),
         }
       );
 

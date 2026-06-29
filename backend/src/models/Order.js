@@ -8,6 +8,11 @@ const Order = sequelize.define("Order", {
     allowNull: false,
   },
 
+  shippingAddress: {
+    type: DataTypes.JSON,
+    allowNull: true,
+  },
+
   totalAmount: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false,
