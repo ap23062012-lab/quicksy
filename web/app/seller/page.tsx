@@ -3,27 +3,19 @@
 import { useEffect, useState } from "react";
 
 export default function SellerPage() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
-
-    if (role !== "seller") {
-      alert("Only sellers can access this page");
-      window.location.href = "/dashboard";
-      return;
-    }
-
-    fetchProducts();
+    fetchSellerOrders();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchSellerOrders = async () => {
     try {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        "https://quicksy-5xdh.onrender.com/api/v1/products/my-products",
+        "https://quicksy-5xdh.onrender.com/api/v1/order/seller-orders",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -34,9 +26,9 @@ export default function SellerPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setProducts(data);
+        setOrders(data);
       } else {
-        alert(data.message || "Failed to load products");
+        alert(data.message || "Failed to load orders");
       }
     } catch (error) {
       console.error(error);
@@ -60,40 +52,64 @@ export default function SellerPage() {
         Seller Dashboard
       </h1>
 
-      {products.length === 0 ? (
+      {orders.length === 0 ? (
         <div className="text-center text-gray-600">
-          No products added yet
+          No Orders Yet
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {products.map((product) => (
+        <div className="space-y-6">
+          {orders.map((order) => (
             <div
-              key={product.id}
+              key={order.id}
               className="bg-white p-6 rounded-xl shadow"
             >
-              {product.image && (
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
-                />
+              <div className="flex justify-between mb-4">
+                <div>
+                  <h2 className="text-xl font-bold">
+                    Order #{order.id}
+                  </h2>
+
+                  <p className="text-gray-600">
+                    Status: {order.status}
+                  </p>
+                </div>
+
+                <div className="text-right">
+                  <p className="font-bold">
+                    ₹{order.totalAmount}
+                  </p>
+
+                  <p className="text-gray-500">
+                    {new Date(
+                      order.createdAt
+                    ).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+              <hr className="mb-4" />
+
+              <h3 className="font-bold mb-2">
+                Products Sold
+              </h3>
+
+              {order.products.map(
+                (product: any, index: number) => (
+                  <div
+                    key={index}
+                    className="flex justify-between mb-2"
+                  >
+                    <span>
+                      {product.name} ×{" "}
+                      {product.quantity}
+                    </span>
+
+                    <span>
+                      ₹{product.price}
+                    </span>
+                  </div>
+                )
               )}
-
-              <h2 className="text-xl font-bold">
-                {product.name}
-              </h2>
-
-              <p className="text-gray-600 mt-2">
-                {product.description}
-              </p>
-
-              <p className="text-2xl font-bold mt-4">
-                ₹{product.price}
-              </p>
-
-              <p className="text-sm text-gray-500 mt-2">
-                Product ID: {product.id}
-              </p>
             </div>
           ))}
         </div>
