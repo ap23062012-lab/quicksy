@@ -30,19 +30,16 @@ router.get(
   authMiddleware,
   async (req, res) => {
     try {
-      // ONLY SELLERS CAN ACCESS
       if (req.user.role !== "seller") {
         return res.status(403).json({
           message: "Only sellers can access this",
         });
       }
 
-      // GET ALL ORDERS
       const allOrders = await Order.findAll({
         order: [["createdAt", "DESC"]],
       });
 
-      // FILTER ORDERS BELONGING TO THIS SELLER
       const sellerOrders = allOrders.filter(
         (order) =>
           order.products &&
@@ -53,6 +50,48 @@ router.get(
       );
 
       res.json(sellerOrders);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "Server error",
+      });
+    }
+  }
+);
+
+// UPDATE ORDER STATUS
+router.put(
+  "/:id/status",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      if (req.user.role !== "seller") {
+        return res.status(403).json({
+          message: "Only sellers can update status",
+        });
+      }
+
+      const { status } = req.body;
+
+      const order = await Order.findByPk(
+        req.params.id
+      );
+
+      if (!order) {
+        return res.status(404).json({
+          message: "Order not found",
+        });
+      }
+
+      order.status = status;
+
+      await order.save();
+
+      res.json({
+        message: "Order status updated",
+        order,
+      });
     } catch (error) {
       console.error(error);
 
