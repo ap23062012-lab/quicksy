@@ -1,64 +1,50 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function AddProductPage() {
   const [name, setName] = useState("");
-  const [description, setDescription] =
-    useState("");
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
-
-  useEffect(() => {
-    const role = localStorage.getItem("role");
-
-    // Only sellers can access this page
-    if (role !== "seller") {
-      alert("Only sellers can access this page");
-      window.location.href = "/dashboard";
-    }
-  }, []);
 
   const handleSubmit = async (
     e: React.FormEvent
   ) => {
     e.preventDefault();
 
-    try {
-      const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-      const res = await fetch(
-        "https://quicksy-5xdh.onrender.com/api/v1/products",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name,
-            description,
-            price,
-            image,
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert("Product added!");
-
-        setName("");
-        setDescription("");
-        setPrice("");
-        setImage("");
-      } else {
-        alert(data.message || "Failed to add product");
+    const res = await fetch(
+      "https://quicksy-5xdh.onrender.com/api/v1/products",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name,
+          description,
+          price,
+          category,
+          image,
+        }),
       }
-    } catch (error) {
-      console.error(error);
-      alert("Server error");
+    );
+
+    if (res.ok) {
+      alert("Product added successfully!");
+
+      setName("");
+      setDescription("");
+      setPrice("");
+      setCategory("");
+      setImage("");
+    } else {
+      const data = await res.json();
+      alert(data.message || "Failed to add product");
     }
   };
 
@@ -66,7 +52,7 @@ export default function AddProductPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-md w-[400px]"
+        className="bg-white p-8 rounded-xl shadow-md w-[420px]"
       >
         <h1 className="text-3xl font-bold mb-6">
           Add Product
@@ -76,39 +62,61 @@ export default function AddProductPage() {
           type="text"
           placeholder="Product Name"
           value={name}
-          onChange={(e) =>
-            setName(e.target.value)
-          }
-          className="border p-3 w-full mb-4"
+          onChange={(e) => setName(e.target.value)}
+          className="border p-3 w-full mb-4 rounded"
+          required
         />
 
         <textarea
           placeholder="Description"
           value={description}
-          onChange={(e) =>
-            setDescription(e.target.value)
-          }
-          className="border p-3 w-full mb-4"
+          onChange={(e) => setDescription(e.target.value)}
+          className="border p-3 w-full mb-4 rounded"
+          required
         />
 
         <input
           type="number"
           placeholder="Price"
           value={price}
-          onChange={(e) =>
-            setPrice(e.target.value)
-          }
-          className="border p-3 w-full mb-4"
+          onChange={(e) => setPrice(e.target.value)}
+          className="border p-3 w-full mb-4 rounded"
+          required
         />
+
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="border p-3 w-full mb-4 rounded"
+          required
+        >
+          <option value="">Select Category</option>
+          <option value="Electronics">
+            Electronics
+          </option>
+          <option value="Fashion">
+            Fashion
+          </option>
+          <option value="Books">
+            Books
+          </option>
+          <option value="Groceries">
+            Groceries
+          </option>
+          <option value="Sports">
+            Sports
+          </option>
+          <option value="Furniture">
+            Furniture
+          </option>
+        </select>
 
         <input
           type="text"
           placeholder="Image URL"
           value={image}
-          onChange={(e) =>
-            setImage(e.target.value)
-          }
-          className="border p-3 w-full mb-4"
+          onChange={(e) => setImage(e.target.value)}
+          className="border p-3 w-full mb-4 rounded"
         />
 
         <button
