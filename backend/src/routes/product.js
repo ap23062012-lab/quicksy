@@ -5,7 +5,9 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+// ==============================
 // GET ALL PRODUCTS
+// ==============================
 router.get("/", async (req, res) => {
   try {
     const products = await Product.findAll();
@@ -20,7 +22,9 @@ router.get("/", async (req, res) => {
   }
 });
 
+// ==============================
 // SEARCH PRODUCTS
+// ==============================
 router.get("/search", async (req, res) => {
   try {
     const query = req.query.query || "";
@@ -57,7 +61,32 @@ router.get("/search", async (req, res) => {
   }
 });
 
+// ==============================
+// GET SELLER PRODUCTS
+// ==============================
+router.get("/my-products", authMiddleware, async (req, res) => {
+  try {
+    const products = await Product.findAll({
+      where: {
+        UserId: req.user.id,
+      },
+    });
+
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
+
+// ==============================
 // GET SINGLE PRODUCT
+// IMPORTANT: KEEP THIS BELOW
+// /search and /my-products
+// ==============================
 router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
@@ -78,26 +107,9 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// GET SELLER PRODUCTS
-router.get("/my-products", authMiddleware, async (req, res) => {
-  try {
-    const products = await Product.findAll({
-      where: {
-        UserId: req.user.id,
-      },
-    });
-
-    res.json(products);
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
-  }
-});
-
+// ==============================
 // ADD PRODUCT
+// ==============================
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const {
@@ -133,7 +145,9 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
+// ==============================
 // UPDATE PRODUCT
+// ==============================
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
@@ -176,7 +190,9 @@ router.put("/:id", authMiddleware, async (req, res) => {
   }
 });
 
+// ==============================
 // DELETE PRODUCT
+// ==============================
 router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
