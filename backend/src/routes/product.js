@@ -1,5 +1,7 @@
+
 const express = require("express");
 const Product = require("../models/Product");
+const { Op } = require("sequelize");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -19,28 +21,61 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET SELLER PRODUCTS
-router.get(
-  "/my-products",
-  authMiddleware,
-  async (req, res) => {
-    try {
-      const products = await Product.findAll({
-        where: {
-          UserId: req.user.id,
-        },
-      });
+// SEARCH PRODUCTS
+router.get("/search", async (req, res) => {
+  try {
+    const query = req.query.query || "";
 
-      res.json(products);
-    } catch (error) {
-      console.error(error);
+    const products = await Product.findAll({
+      where: {
+        [Op.or]: [
+          {
+            name: {
+              [Op.like]: `%${query}%`,
+            },
+          },
+          {
+            description: {
+              [Op.like]: `%${query}%`,
+            },
+          },
+          {
+            category: {
+              [Op.like]: `%${query}%`,
+            },
+          },
+        ],
+      },
+    });
 
-      res.status(500).json({
-        message: "Server error",
-      });
-    }
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server error",
+    });
   }
-);
+});
+
+// GET SELLER PRODUCTS
+router.get("/my-products", authMiddleware, async (req, res) => {
+  try {
+    const products = await Product.findAll({
+      where: {
+        UserId: req.user.id,
+      },
+    });
+
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
 
 // ADD PRODUCT
 router.post("/", authMiddleware, async (req, res) => {
