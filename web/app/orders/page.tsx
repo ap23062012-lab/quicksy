@@ -38,6 +38,40 @@ export default function OrdersPage() {
     }
   };
 
+  const cancelOrder = async (orderId: number) => {
+    const confirmCancel = confirm(
+      "Are you sure you want to cancel this order?"
+    );
+
+    if (!confirmCancel) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `https://quicksy-5xdh.onrender.com/api/v1/order/${orderId}/cancel`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Order cancelled successfully");
+        fetchOrders();
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -67,25 +101,23 @@ export default function OrdersPage() {
                 <div>
                   <h2 className="text-xl font-bold">
                     Order #
-                    {String(order.id || orderIndex).slice(0, 8)}
+                    {String(order.id).slice(0, 8)}
                   </h2>
 
                   <p className="text-gray-600">
-                    Status: {order.status || "Pending"}
+                    Status: {order.status}
                   </p>
                 </div>
 
                 <div className="text-right">
                   <p className="font-bold">
-                    ₹{order.totalAmount || 0}
+                    ₹{order.totalAmount}
                   </p>
 
                   <p className="text-gray-500">
-                    {order.createdAt
-                      ? new Date(
-                          order.createdAt
-                        ).toLocaleDateString()
-                      : "Unknown date"}
+                    {new Date(
+                      order.createdAt
+                    ).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -96,28 +128,32 @@ export default function OrdersPage() {
                 Products
               </h3>
 
-              {Array.isArray(order.products) ? (
-                order.products.map(
-                  (product: any, index: number) => (
-                    <div
-                      key={index}
-                      className="flex justify-between mb-2"
-                    >
-                      <span>
-                        {product.name || "Unknown Product"} ×{" "}
-                        {product.quantity || 1}
-                      </span>
+              {order.products.map(
+                (product: any, index: number) => (
+                  <div
+                    key={index}
+                    className="flex justify-between mb-2"
+                  >
+                    <span>
+                      {product.name} × {product.quantity}
+                    </span>
 
-                      <span>
-                        ₹{product.price || 0}
-                      </span>
-                    </div>
-                  )
+                    <span>
+                      ₹{product.price}
+                    </span>
+                  </div>
                 )
-              ) : (
-                <p className="text-gray-500">
-                  No products found
-                </p>
+              )}
+
+              {order.status === "Pending" && (
+                <button
+                  onClick={() =>
+                    cancelOrder(order.id)
+                  }
+                  className="mt-6 bg-red-600 text-white px-6 py-3 rounded-lg"
+                >
+                  Cancel Order
+                </button>
               )}
             </div>
           ))}
