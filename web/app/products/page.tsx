@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface Product {
   id: number;
@@ -8,11 +8,14 @@ interface Product {
   description: string;
   price: number;
   image?: string;
+  category?: string;
 }
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] =
+    useState("All");
 
   useEffect(() => {
     fetchProducts();
@@ -96,29 +99,68 @@ export default function ProductsPage() {
     window.location.href = "/checkout";
   };
 
+  const categories = useMemo(() => {
+    const unique = [
+      ...new Set(
+        products
+          .map((p) => p.category)
+          .filter(Boolean)
+      ),
+    ];
+
+    return ["All", ...unique];
+  }, [products]);
+
+  const filteredProducts =
+    selectedCategory === "All"
+      ? products
+      : products.filter(
+          (p) => p.category === selectedCategory
+        );
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-4xl font-bold text-center mb-8">
         Products
       </h1>
 
-      <div className="max-w-xl mx-auto mb-8">
+      <div className="max-w-xl mx-auto mb-6">
         <input
           type="text"
           placeholder="🔍 Search products..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
           className="w-full border p-4 rounded-lg shadow"
         />
       </div>
 
-      {products.length === 0 ? (
+      <div className="flex flex-wrap justify-center gap-3 mb-8">
+        {categories.map((category) => (
+          <button
+            key={String(category)}
+            onClick={() =>
+              setSelectedCategory(String(category))
+            }
+            className={`px-5 py-2 rounded-full ${
+              selectedCategory === category
+                ? "bg-blue-600 text-white"
+                : "bg-white border"
+            }`}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
+      {filteredProducts.length === 0 ? (
         <div className="text-center text-2xl text-gray-500">
           No products found.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <div
               key={product.id}
               className="bg-white rounded-xl shadow-md p-4"
@@ -135,7 +177,11 @@ export default function ProductsPage() {
                 {product.name}
               </h2>
 
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-500 text-sm mb-2">
+                {product.category || "General"}
+              </p>
+
+              <p className="text-gray-600">
                 {product.description}
               </p>
 
@@ -145,14 +191,18 @@ export default function ProductsPage() {
 
               <div className="flex gap-2 mt-4">
                 <button
-                  onClick={() => addToCart(product.id)}
+                  onClick={() =>
+                    addToCart(product.id)
+                  }
                   className="bg-black text-white px-4 py-2 rounded-lg w-1/2"
                 >
                   Add to Cart
                 </button>
 
                 <button
-                  onClick={() => buyNow(product.id)}
+                  onClick={() =>
+                    buyNow(product.id)
+                  }
                   className="bg-green-600 text-white px-4 py-2 rounded-lg w-1/2"
                 >
                   Buy Now
