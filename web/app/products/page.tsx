@@ -9,6 +9,7 @@ interface Product {
   price: number;
   image?: string;
   category?: string;
+  createdAt?: string;
 }
 
 export default function ProductsPage() {
@@ -16,6 +17,8 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] =
     useState("All");
+  const [sortBy, setSortBy] =
+    useState("newest");
 
   useEffect(() => {
     fetchProducts();
@@ -111,15 +114,62 @@ export default function ProductsPage() {
     return ["All", ...unique];
   }, [products]);
 
-  const filteredProducts =
-    selectedCategory === "All"
-      ? products
-      : products.filter(
-          (p) => p.category === selectedCategory
+  const filteredProducts = useMemo(() => {
+    let result =
+      selectedCategory === "All"
+        ? [...products]
+        : products.filter(
+            (p) =>
+              p.category === selectedCategory
+          );
+
+    switch (sortBy) {
+      case "low-high":
+        result.sort(
+          (a, b) => a.price - b.price
         );
+        break;
+
+      case "high-low":
+        result.sort(
+          (a, b) => b.price - a.price
+        );
+        break;
+
+      case "oldest":
+        result.sort(
+          (a, b) =>
+            new Date(
+              a.createdAt || ""
+            ).getTime() -
+            new Date(
+              b.createdAt || ""
+            ).getTime()
+        );
+        break;
+
+      default:
+        result.sort(
+          (a, b) =>
+            new Date(
+              b.createdAt || ""
+            ).getTime() -
+            new Date(
+              a.createdAt || ""
+            ).getTime()
+        );
+    }
+
+    return result;
+  }, [
+    products,
+    selectedCategory,
+    sortBy,
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
+
       <h1 className="text-4xl font-bold text-center mb-8">
         Products
       </h1>
@@ -136,12 +186,40 @@ export default function ProductsPage() {
         />
       </div>
 
+      <div className="flex justify-center mb-6">
+        <select
+          value={sortBy}
+          onChange={(e) =>
+            setSortBy(e.target.value)
+          }
+          className="border p-3 rounded-lg shadow"
+        >
+          <option value="newest">
+            Newest First
+          </option>
+
+          <option value="oldest">
+            Oldest First
+          </option>
+
+          <option value="low-high">
+            Price: Low → High
+          </option>
+
+          <option value="high-low">
+            Price: High → Low
+          </option>
+        </select>
+      </div>
+
       <div className="flex flex-wrap justify-center gap-3 mb-8">
         {categories.map((category) => (
           <button
             key={String(category)}
             onClick={() =>
-              setSelectedCategory(String(category))
+              setSelectedCategory(
+                String(category)
+              )
             }
             className={`px-5 py-2 rounded-full ${
               selectedCategory === category
@@ -153,8 +231,7 @@ export default function ProductsPage() {
           </button>
         ))}
       </div>
-
-      {filteredProducts.length === 0 ? (
+            {filteredProducts.length === 0 ? (
         <div className="text-center text-2xl text-gray-500">
           No products found.
         </div>
@@ -177,11 +254,11 @@ export default function ProductsPage() {
                 {product.name}
               </h2>
 
-              <p className="text-gray-500 text-sm mb-2">
-                {product.category || "General"}
+              <p className="text-sm text-blue-600 font-semibold mb-2">
+                {product.category || "Others"}
               </p>
 
-              <p className="text-gray-600">
+              <p className="text-gray-600 mt-2">
                 {product.description}
               </p>
 
@@ -191,19 +268,15 @@ export default function ProductsPage() {
 
               <div className="flex gap-2 mt-4">
                 <button
-                  onClick={() =>
-                    addToCart(product.id)
-                  }
-                  className="bg-black text-white px-4 py-2 rounded-lg w-1/2"
+                  onClick={() => addToCart(product.id)}
+                  className="bg-black text-white px-4 py-2 rounded-lg w-1/2 hover:bg-gray-800 transition"
                 >
                   Add to Cart
                 </button>
 
                 <button
-                  onClick={() =>
-                    buyNow(product.id)
-                  }
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg w-1/2"
+                  onClick={() => buyNow(product.id)}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg w-1/2 hover:bg-green-700 transition"
                 >
                   Buy Now
                 </button>
