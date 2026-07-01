@@ -102,7 +102,45 @@ export default function ProductsPage() {
     window.location.href = "/checkout";
   };
 
-  const categories = useMemo(() => {
+  const addToWishlist = async (
+    productId: number
+  ) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Please login first");
+        return;
+      }
+
+      const res = await fetch(
+        "https://quicksy-5xdh.onrender.com/api/v1/wishlist",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            productId,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("❤️ Added to Wishlist");
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server Error");
+    }
+  };
+    const categories = useMemo(() => {
     const unique = [
       ...new Set(
         products
@@ -240,7 +278,7 @@ export default function ProductsPage() {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-xl shadow-md p-4"
+              className="bg-white rounded-xl shadow-md p-4 hover:shadow-xl transition"
             >
               {product.image && (
                 <img
@@ -250,15 +288,31 @@ export default function ProductsPage() {
                 />
               )}
 
-              <h2 className="text-xl font-bold">
-                {product.name}
-              </h2>
+              <div className="flex justify-between items-start">
 
-              <p className="text-sm text-blue-600 font-semibold mb-2">
-                {product.category || "Others"}
-              </p>
+                <div>
+                  <h2 className="text-xl font-bold">
+                    {product.name}
+                  </h2>
 
-              <p className="text-gray-600 mt-2">
+                  <p className="text-sm text-blue-600 font-semibold">
+                    {product.category || "Others"}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() =>
+                    addToWishlist(product.id)
+                  }
+                  className="text-3xl hover:scale-125 transition"
+                  title="Add to Wishlist"
+                >
+                  ❤️
+                </button>
+
+              </div>
+
+              <p className="text-gray-600 mt-3">
                 {product.description}
               </p>
 
@@ -266,25 +320,31 @@ export default function ProductsPage() {
                 ₹{product.price}
               </p>
 
-              <div className="flex gap-2 mt-4">
+              <div className="flex gap-2 mt-5">
+
                 <button
-                  onClick={() => addToCart(product.id)}
+                  onClick={() =>
+                    addToCart(product.id)
+                  }
                   className="bg-black text-white px-4 py-2 rounded-lg w-1/2 hover:bg-gray-800 transition"
                 >
                   Add to Cart
                 </button>
 
                 <button
-                  onClick={() => buyNow(product.id)}
+                  onClick={() =>
+                    buyNow(product.id)
+                  }
                   className="bg-green-600 text-white px-4 py-2 rounded-lg w-1/2 hover:bg-green-700 transition"
                 >
                   Buy Now
                 </button>
+
               </div>
             </div>
           ))}
         </div>
       )}
-    </div>
+          </div>
   );
 }

@@ -10,13 +10,15 @@ const productRoutes = require("./routes/product");
 const cartRoutes = require("./routes/cart");
 const addressRoutes = require("./routes/address");
 const orderRoutes = require("./routes/order");
+const wishlistRoutes = require("./routes/wishlist");
 
-// MODELS (important for Sequelize associations)
+// MODELS
 require("./models/User");
 require("./models/Product");
 require("./models/Cart");
 require("./models/Address");
 require("./models/Order");
+require("./models/Wishlist");
 
 const app = express();
 
@@ -32,6 +34,7 @@ app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/address", addressRoutes);
 app.use("/api/v1/order", orderRoutes);
+app.use("/api/v1/wishlist", wishlistRoutes);
 
 // HEALTH CHECK
 app.get("/api/v1/health", (req, res) => {
@@ -43,10 +46,8 @@ app.get("/api/v1/health", (req, res) => {
 // START SERVER
 const startServer = async () => {
   try {
-    // DATABASE CONNECTION
     await testConnection();
 
-    // AUTO UPDATE TABLES
     await sequelize.sync({ alter: true });
 
     app.listen(PORT, () => {
