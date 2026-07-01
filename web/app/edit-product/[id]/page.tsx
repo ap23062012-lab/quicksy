@@ -8,11 +8,9 @@ export default function EditProductPage() {
   const router = useRouter();
 
   const [name, setName] = useState("");
-  const [description, setDescription] =
-    useState("");
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] =
-    useState("");
+  const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
 
   useEffect(() => {
@@ -37,9 +35,7 @@ export default function EditProductPage() {
     }
   };
 
-  const updateProduct = async (
-    e: React.FormEvent
-  ) => {
+  const updateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
@@ -50,8 +46,7 @@ export default function EditProductPage() {
         {
           method: "PUT",
           headers: {
-            "Content-Type":
-              "application/json",
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -68,14 +63,12 @@ export default function EditProductPage() {
 
       if (res.ok) {
         alert("Product updated!");
-
         router.push("/my-products");
       } else {
         alert(data.message);
       }
     } catch (error) {
       console.error(error);
-
       alert("Server error");
     }
   };
@@ -94,18 +87,14 @@ export default function EditProductPage() {
           className="border p-3 w-full mb-4 rounded"
           placeholder="Product Name"
           value={name}
-          onChange={(e) =>
-            setName(e.target.value)
-          }
+          onChange={(e) => setName(e.target.value)}
         />
 
         <textarea
           className="border p-3 w-full mb-4 rounded"
           placeholder="Description"
           value={description}
-          onChange={(e) =>
-            setDescription(e.target.value)
-          }
+          onChange={(e) => setDescription(e.target.value)}
         />
 
         <input
@@ -113,54 +102,37 @@ export default function EditProductPage() {
           placeholder="Price"
           type="number"
           value={price}
-          onChange={(e) =>
-            setPrice(e.target.value)
-          }
+          onChange={(e) => setPrice(e.target.value)}
         />
 
         <select
           className="border p-3 w-full mb-4 rounded"
           value={category}
-          onChange={(e) =>
-            setCategory(e.target.value)
-          }
+          onChange={(e) => setCategory(e.target.value)}
         >
-          <option value="">
-            Select Category
-          </option>
-
-          <option value="Electronics">
-            Electronics
-          </option>
-
-          <option value="Fashion">
-            Fashion
-          </option>
-
-          <option value="Books">
-            Books
-          </option>
-
-          <option value="Groceries">
-            Groceries
-          </option>
-
-          <option value="Sports">
-            Sports
-          </option>
-
-          <option value="Furniture">
-            Furniture
-          </option>
+          <option value="">Select Category</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Fashion">Fashion</option>
+          <option value="Home & Kitchen">Home & Kitchen</option>
+          <option value="Groceries">Groceries</option>
+          <option value="Books">Books</option>
+          <option value="Sports">Sports</option>
+          <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+          <option value="Toys & Games">Toys & Games</option>
+          <option value="Stationery">Stationery</option>
+          <option value="Health & Wellness">Health & Wellness</option>
+          <option value="Automotive">Automotive</option>
+          <option value="Pet Supplies">Pet Supplies</option>
+          <option value="Jewellery">Jewellery</option>
+          <option value="Furniture">Furniture</option>
+          <option value="Others">Others</option>
         </select>
 
         <input
           className="border p-3 w-full mb-4 rounded"
           placeholder="Image URL"
           value={image}
-          onChange={(e) =>
-            setImage(e.target.value)
-          }
+          onChange={(e) => setImage(e.target.value)}
         />
 
         <button

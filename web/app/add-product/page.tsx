@@ -9,9 +9,7 @@ export default function AddProductPage() {
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
 
-  const handleSubmit = async (
-    e: React.FormEvent
-  ) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
@@ -91,24 +89,21 @@ export default function AddProductPage() {
           required
         >
           <option value="">Select Category</option>
-          <option value="Electronics">
-            Electronics
-          </option>
-          <option value="Fashion">
-            Fashion
-          </option>
-          <option value="Books">
-            Books
-          </option>
-          <option value="Groceries">
-            Groceries
-          </option>
-          <option value="Sports">
-            Sports
-          </option>
-          <option value="Furniture">
-            Furniture
-          </option>
+          <option value="Electronics">Electronics</option>
+          <option value="Fashion">Fashion</option>
+          <option value="Home & Kitchen">Home & Kitchen</option>
+          <option value="Groceries">Groceries</option>
+          <option value="Books">Books</option>
+          <option value="Sports">Sports</option>
+          <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+          <option value="Toys & Games">Toys & Games</option>
+          <option value="Stationery">Stationery</option>
+          <option value="Health & Wellness">Health & Wellness</option>
+          <option value="Automotive">Automotive</option>
+          <option value="Pet Supplies">Pet Supplies</option>
+          <option value="Jewellery">Jewellery</option>
+          <option value="Furniture">Furniture</option>
+          <option value="Others">Others</option>
         </select>
 
         <input
