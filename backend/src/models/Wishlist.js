@@ -1,12 +1,16 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
+const { sequelize } = require("../config/database");
 
 const User = require("./User");
 const Product = require("./Product");
 
-const Wishlist = sequelize.define("Wishlist", {}, {
-  timestamps: true,
-});
+const Wishlist = sequelize.define(
+  "Wishlist",
+  {},
+  {
+    timestamps: true,
+  }
+);
 
 User.belongsToMany(Product, {
   through: Wishlist,
