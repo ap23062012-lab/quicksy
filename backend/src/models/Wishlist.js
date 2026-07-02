@@ -12,6 +12,7 @@ const Wishlist = sequelize.define(
   }
 );
 
+// Many-to-Many relationship
 User.belongsToMany(Product, {
   through: Wishlist,
 });
@@ -19,5 +20,14 @@ User.belongsToMany(Product, {
 Product.belongsToMany(User, {
   through: Wishlist,
 });
+
+// Direct associations (needed for include:)
+Wishlist.belongsTo(User);
+
+Wishlist.belongsTo(Product);
+
+User.hasMany(Wishlist);
+
+Product.hasMany(Wishlist);
 
 module.exports = Wishlist;
