@@ -129,11 +129,41 @@ export default function EditProductPage() {
         </select>
 
         <input
-          className="border p-3 w-full mb-4 rounded"
-          placeholder="Image URL"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-        />
+  type="file"
+  accept="image/*"
+  className="border p-3 w-full mb-4 rounded"
+  onChange={async (e) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("upload_preset", "quicksy");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/emlwwslw/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await res.json();
+
+    setImage(data.secure_url);
+
+    alert("Image Uploaded Successfully!");
+  }}
+/>
+{image && (
+  <img
+    src={image}
+    alt="Preview"
+    className="w-40 h-40 object-cover rounded-lg mb-4"
+  />
+)}
 
         <button
           className="bg-blue-600 text-white py-3 rounded-lg w-full"
