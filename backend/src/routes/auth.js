@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
 const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
 
 // SIGNUP ROUTE
 router.post("/signup", async (req, res) => {
@@ -184,6 +185,38 @@ router.get("/profile/:email", async (req, res) => {
     console.error(error);
 
     return res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
+
+// ==============================
+// GET MY PROFILE
+// ==============================
+router.get("/profile", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: [
+  "id",
+  "name",
+  "email",
+  "profileImage",
+  "role",
+  "createdAt",
+],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
       message: "Server error",
     });
   }
