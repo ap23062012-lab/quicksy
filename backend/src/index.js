@@ -11,6 +11,7 @@ const cartRoutes = require("./routes/cart");
 const addressRoutes = require("./routes/address");
 const orderRoutes = require("./routes/order");
 const wishlistRoutes = require("./routes/wishlist");
+const reviewRoutes = require("./routes/review");
 
 // MODELS
 require("./models/User");
@@ -19,6 +20,7 @@ require("./models/Cart");
 require("./models/Address");
 require("./models/Order");
 require("./models/Wishlist");
+require("./models/Review");
 
 const app = express();
 
@@ -35,6 +37,7 @@ app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/address", addressRoutes);
 app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/wishlist", wishlistRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
 
 // HEALTH CHECK
 app.get("/api/v1/health", (req, res) => {

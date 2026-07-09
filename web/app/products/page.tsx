@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
 interface Product {
   id: number;
@@ -276,10 +277,13 @@ export default function ProductsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-xl shadow-md p-4 hover:shadow-xl transition"
-            >
+            <Link
+  href={`/product/${product.id}`}
+  key={product.id}
+>
+  <div
+    className="bg-white rounded-xl shadow-md p-4 hover:shadow-xl transition cursor-pointer"
+  >
               {product.image && (
                 <img
                   src={product.image}
@@ -301,14 +305,16 @@ export default function ProductsPage() {
                 </div>
 
                 <button
-                  onClick={() =>
-                    addToWishlist(product.id)
-                  }
-                  className="text-3xl hover:scale-125 transition"
-                  title="Add to Wishlist"
-                >
-                  ❤️
-                </button>
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToWishlist(product.id);
+  }}
+  className="text-3xl hover:scale-125 transition"
+  title="Add to Wishlist"
+>
+  ❤️
+</button>
 
               </div>
 
@@ -323,18 +329,22 @@ export default function ProductsPage() {
               <div className="flex gap-2 mt-5">
 
                 <button
-                  onClick={() =>
-                    addToCart(product.id)
-                  }
-                  className="bg-black text-white px-4 py-2 rounded-lg w-1/2 hover:bg-gray-800 transition"
-                >
-                  Add to Cart
-                </button>
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product.id);
+  }}
+  className="bg-black text-white px-4 py-2 rounded-lg w-1/2 hover:bg-gray-800 transition"
+>
+  Add to Cart
+</button>
 
                 <button
-                  onClick={() =>
-                    buyNow(product.id)
-                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    buyNow(product.id);
+                  }}
                   className="bg-green-600 text-white px-4 py-2 rounded-lg w-1/2 hover:bg-green-700 transition"
                 >
                   Buy Now
@@ -342,9 +352,10 @@ export default function ProductsPage() {
 
               </div>
             </div>
+            </Link>
           ))}
         </div>
       )}
           </div>
-  );
+  )
 }
