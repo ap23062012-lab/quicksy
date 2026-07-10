@@ -1,129 +1,99 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
-
-interface DecodedToken {
-  email: string;
-  id: number;
-}
 
 export default function ProfilePage() {
-  const [email, setEmail] = useState("");
-  const [userId, setUserId] = useState<number | null>(null);
-  const [profileImage, setProfileImage] = useState("");
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      window.location.href = "/login";
-      return;
-    }
-
-    try {
-      const decoded: DecodedToken = jwtDecode(token);
-
-      setEmail(decoded.email);
-      setUserId(decoded.id);
-
-      fetch(
-        `https://quicksy-5xdh.onrender.com/api/v1/auth/profile/${decoded.email}`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.user?.profileImage) {
-            setProfileImage(data.user.profileImage);
-          }
-        });
-    } catch (error) {
-      localStorage.removeItem("token");
-
-      window.location.href = "/login";
-    }
+    fetchProfile();
   }, []);
 
-  const handleImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-    if (!file) return;
+      const res = await fetch(
+        "https://quicksy-5xdh.onrender.com/api/v1/auth/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    const reader = new FileReader();
+      const data = await res.json();
 
-    reader.readAsDataURL(file);
-
-    reader.onloadend = async () => {
-      const base64Image = reader.result as string;
-
-      setProfileImage(base64Image);
-
-      try {
-        await fetch(
-          "https://quicksy-5xdh.onrender.com/api/v1/auth/upload-profile-image",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email,
-              profileImage: base64Image,
-            }),
-          }
-        );
-
-        alert("✅ Profile image uploaded");
-      } catch (error) {
-        alert("❌ Upload failed");
-      }
-    };
+      setUser(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
+  if (!user)
+    return (
+      <h1 className="text-center mt-20 text-2xl">
+        Loading...
+      </h1>
+    );
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-10 rounded-xl shadow-md w-[400px]">
-        <h1 className="text-3xl font-bold mb-6 text-center">
-          User Profile
-        </h1>
+    <div className="max-w-3xl mx-auto p-8">
 
-        <div className="flex flex-col items-center mb-6">
-          {profileImage ? (
-            <img
-              src={profileImage}
-              alt="Profile"
-              className="w-32 h-32 rounded-full object-cover mb-4"
-            />
-          ) : (
-            <div className="w-32 h-32 rounded-full bg-gray-300 mb-4" />
-          )}
+      <div className="bg-white rounded-xl shadow-lg p-8">
 
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
+        <div className="flex items-center gap-6">
+
+          <img
+            src={user.profileImage || "/avatar.png"}
+            alt="Profile"
+            className="w-28 h-28 rounded-full object-cover border"
           />
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <p className="font-semibold">User ID</p>
-
-            <div className="border p-3 rounded">
-              {userId}
-            </div>
-          </div>
 
           <div>
-            <p className="font-semibold">Email</p>
+            <h1 className="text-3xl font-bold">
+              {user.name}
+            </h1>
 
-            <div className="border p-3 rounded break-all">
-              {email}
-            </div>
+            <p className="text-gray-600">
+              {user.email}
+            </p>
+
+            <p className="text-gray-600">
+  Role: {user.role}
+</p>
           </div>
+
         </div>
+
+        <hr className="my-8" />
+
+        <div className="grid grid-cols-2 gap-6">
+
+          <button className="bg-blue-600 text-white py-3 rounded-lg">
+            Edit Profile
+          </button>
+
+          <button className="bg-green-600 text-white py-3 rounded-lg">
+            My Orders
+          </button>
+
+          <button className="bg-pink-600 text-white py-3 rounded-lg">
+            Wishlist
+          </button>
+
+          <button className="bg-yellow-500 text-white py-3 rounded-lg">
+            My Addresses
+          </button>
+
+          <button className="bg-red-600 text-white py-3 rounded-lg col-span-2">
+            Logout
+          </button>
+
+        </div>
+
       </div>
+
     </div>
   );
 }
