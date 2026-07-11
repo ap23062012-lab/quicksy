@@ -24,6 +24,7 @@ export default function WishlistPage() {
       );
 
       const data = await res.json();
+console.log(data); 
 
       if (res.ok) {
         setWishlist(data);
@@ -86,11 +87,11 @@ export default function WishlistPage() {
         </div>
       ) : (
         <div className="grid md:grid-cols-3 gap-6">
-          {wishlist.map((item) => (
+          {wishlist.map((item, index) => (
             <div
-              key={item.id}
-              className="bg-white rounded-xl shadow p-4"
-            >
+  key={item.id || item.Product?.id || index}
+  className="bg-white rounded-xl shadow p-4"
+>
               {item.Product?.image && (
                 <img
                   src={item.Product.image}

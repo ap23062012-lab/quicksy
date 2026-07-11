@@ -1,12 +1,38 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     fetchProfile();
+    const editProfile = () => {
+  router.push("/profile/edit");
+};
+
+const openOrders = () => {
+  router.push("/orders");
+};
+
+const openWishlist = () => {
+  router.push("/wishlist");
+};
+
+const openAddresses = () => {
+  router.push("/address");
+};
+
+const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  alert("Logged out successfully");
+
+  router.push("/login");
+};
   }, []);
 
   const fetchProfile = async () => {
@@ -30,6 +56,27 @@ export default function ProfilePage() {
     }
   };
 
+  const editProfile = () => {
+  router.push("/profile/edit");
+};
+
+const openOrders = () => {
+  router.push("/orders");
+};
+
+const openWishlist = () => {
+  router.push("/wishlist");
+};
+
+const openAddresses = () => {
+  router.push("/address");
+};
+
+const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  router.push("/login");
+};
   if (!user)
     return (
       <h1 className="text-center mt-20 text-2xl">
@@ -70,23 +117,38 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-2 gap-6">
 
-          <button className="bg-blue-600 text-white py-3 rounded-lg">
+          <button
+            onClick={editProfile}
+            className="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+>
             Edit Profile
           </button>
 
-          <button className="bg-green-600 text-white py-3 rounded-lg">
+          <button
+onClick={openOrders}
+className="bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition"
+>
             My Orders
           </button>
 
-          <button className="bg-pink-600 text-white py-3 rounded-lg">
+          <button
+onClick={openWishlist}
+className="bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700 transition"
+>
             Wishlist
           </button>
 
-          <button className="bg-yellow-500 text-white py-3 rounded-lg">
+          <button
+onClick={openAddresses}
+className="bg-yellow-500 text-white py-3 rounded-lg hover:bg-yellow-600 transition"
+>
             My Addresses
           </button>
 
-          <button className="bg-red-600 text-white py-3 rounded-lg col-span-2">
+          <button
+onClick={logout}
+className="bg-red-600 text-white py-3 rounded-lg col-span-2 hover:bg-red-700 transition"
+>
             Logout
           </button>
 
