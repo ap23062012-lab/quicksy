@@ -2,18 +2,50 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function EditProfilePage() {
   const router = useRouter();
 
-  const [name, setName] = useState("");
-  const [profileImage, setProfileImage] = useState("");
-  const [loading, setLoading] = useState(false);
+ const [name, setName] = useState("");
+const [profileImage, setProfileImage] = useState("");
+const [loading, setLoading] = useState(false);
+const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+ useEffect(() => {
+  fetchProfile();
+}, []);
 
+const uploadImage = async (
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
+  try {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    setUploading(true);
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("upload_preset", "quicksy_profile");
+
+    const res = await axios.post(
+      "https://api.cloudinary.com/v1_1/emlwwslw/image/upload",
+      formData
+    );
+
+    setProfileImage(res.data.secure_url);
+
+    alert("Image uploaded successfully!");
+  } catch (error) {
+    console.error(error);
+    alert("Image upload failed");
+  } finally {
+    setUploading(false);
+  }
+};
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -100,13 +132,22 @@ export default function EditProfilePage() {
           className="border p-3 rounded-lg w-full mb-5"
         />
 
-        <input
-          type="text"
-          placeholder="Profile Image URL"
-          value={profileImage}
-          onChange={(e) => setProfileImage(e.target.value)}
-          className="border p-3 rounded-lg w-full mb-8"
-        />
+        <div className="mb-8">
+
+  <input
+    type="file"
+    accept="image/*"
+    onChange={uploadImage}
+    className="w-full"
+  />
+
+  {uploading && (
+    <p className="text-blue-600 mt-2">
+      Uploading image...
+    </p>
+  )}
+
+</div> 
 
         <div className="flex gap-4">
 
