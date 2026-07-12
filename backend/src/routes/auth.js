@@ -222,4 +222,38 @@ router.get("/profile", authMiddleware, async (req, res) => {
   }
 });
 
+// ==============================
+// UPDATE MY PROFILE
+// ==============================
+router.put("/profile", authMiddleware, async (req, res) => {
+  try {
+    const { name, profileImage } = req.body;
+
+    const user = await User.findByPk(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    user.name = name || user.name;
+    user.profileImage = profileImage || user.profileImage;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      user,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
+
 module.exports = router;
