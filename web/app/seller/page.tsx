@@ -191,31 +191,39 @@ export default function SellerPage() {
                 <p>No address found</p>
               )}
 
-              <div className="flex gap-4 mt-6">
-                <button
-                  onClick={() =>
-                    updateStatus(
-                      order.id,
-                      "Shipped"
-                    )
-                  }
-                  className="bg-blue-600 text-white px-4 py-2 rounded"
-                >
-                  Mark as Shipped
-                </button>
+             <div className="flex gap-4 mt-6">
 
-                <button
-                  onClick={() =>
-                    updateStatus(
-                      order.id,
-                      "Delivered"
-                    )
-                  }
-                  className="bg-green-600 text-white px-4 py-2 rounded"
-                >
-                  Mark as Delivered
-                </button>
-              </div>
+  {order.status === "Pending" && (
+    <button
+      onClick={() => updateStatus(order.id, "Shipped")}
+      className="bg-blue-600 text-white px-4 py-2 rounded"
+    >
+      Mark as Shipped
+    </button>
+  )}
+
+  {order.status === "Shipped" && (
+    <button
+      onClick={() => updateStatus(order.id, "Delivered")}
+      className="bg-green-600 text-white px-4 py-2 rounded"
+    >
+      Mark as Delivered
+    </button>
+  )}
+
+  {order.status === "Delivered" && (
+    <span className="bg-green-100 text-green-700 px-4 py-2 rounded font-semibold">
+      ✅ Delivered
+    </span>
+  )}
+
+  {order.status === "Cancelled" && (
+    <span className="bg-red-100 text-red-700 px-4 py-2 rounded font-semibold">
+      ❌ Order Cancelled
+    </span>
+  )}
+
+</div>
             </div>
           ))}
         </div>

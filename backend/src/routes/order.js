@@ -118,6 +118,12 @@ router.put("/:id/status", authMiddleware, async (req, res) => {
     const { status } = req.body;
 
     const order = await Order.findByPk(req.params.id);
+    // Don't allow updating cancelled orders
+if (order.status === "Cancelled") {
+  return res.status(400).json({
+    message: "Cancelled orders cannot be updated.",
+  });
+}
 
     if (!order) {
       return res.status(404).json({
@@ -125,7 +131,17 @@ router.put("/:id/status", authMiddleware, async (req, res) => {
       });
     }
 
-    order.status = status;
+    // Allowed status flow
+if (
+  (order.status === "Pending" && status === "Shipped") ||
+  (order.status === "Shipped" && status === "Delivered")
+) {
+  order.status = status;
+} else {
+  return res.status(400).json({
+    message: "Invalid status update.",
+  });
+}
 
     await order.save();
 
