@@ -12,6 +12,7 @@ const addressRoutes = require("./routes/address");
 const orderRoutes = require("./routes/order");
 const wishlistRoutes = require("./routes/wishlist");
 const reviewRoutes = require("./routes/review");
+const returnRoutes = require("./routes/return");
 
 // MODELS
 require("./models/User");
@@ -21,6 +22,7 @@ require("./models/Address");
 require("./models/Order");
 require("./models/Wishlist");
 require("./models/Review");
+require("./models/ReturnRequest");
 
 const app = express();
 
@@ -38,6 +40,7 @@ app.use("/api/v1/address", addressRoutes);
 app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/wishlist", wishlistRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/returns", returnRoutes);
 
 // HEALTH CHECK
 app.get("/api/v1/health", (req, res) => {
