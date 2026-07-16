@@ -27,6 +27,24 @@ const Product = sequelize.define("Product", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+
+  // NEW
+  stock: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+
+  // NEW
+  sold: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+
+  // NEW
+  exchangeAvailable: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
 });
 
 // RELATIONSHIP

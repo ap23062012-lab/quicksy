@@ -1,5 +1,6 @@
 const express = require("express");
 const Order = require("../models/Order");
+const Product = require("../models/Product");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -169,6 +170,28 @@ router.post("/", authMiddleware, async (req, res) => {
       totalAmount,
       shippingAddress,
     } = req.body;
+
+    // Check stock and update inventory
+    for (const item of products) {
+      const product = await Product.findByPk(item.id);
+
+      if (!product) {
+        return res.status(404).json({
+          message: `${item.name} not found.`,
+        });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          message: `${product.name} has only ${product.stock} item(s) left in stock.`,
+        });
+      }
+
+      product.stock -= item.quantity;
+      product.sold += item.quantity;
+
+      await product.save();
+    }
 
     const order = await Order.create({
       products,

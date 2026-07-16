@@ -8,6 +8,8 @@ export default function AddProductPage() {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
+  const [stock, setStock] = useState(1);
+const [exchangeAvailable, setExchangeAvailable] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +30,8 @@ export default function AddProductPage() {
           price,
           category,
           image,
+          stock,
+          exchangeAvailable,
         }),
       }
     );
@@ -35,11 +39,13 @@ export default function AddProductPage() {
     if (res.ok) {
       alert("Product added successfully!");
 
-      setName("");
-      setDescription("");
-      setPrice("");
-      setCategory("");
-      setImage("");
+     setName("");
+setDescription("");
+setPrice("");
+setCategory("");
+setImage("");
+setStock(1);
+setExchangeAvailable(true);
     } else {
       const data = await res.json();
       alert(data.message || "Failed to add product");
@@ -82,6 +88,16 @@ export default function AddProductPage() {
           required
         />
 
+        <input
+  type="number"
+  placeholder="Stock Quantity"
+  value={stock}
+  onChange={(e) => setStock(Number(e.target.value))}
+  className="border p-3 w-full mb-4 rounded"
+  min={0}
+  required
+/>
+
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -105,6 +121,18 @@ export default function AddProductPage() {
           <option value="Furniture">Furniture</option>
           <option value="Others">Others</option>
         </select>
+
+        <label className="flex items-center gap-3 mb-4">
+  <input
+    type="checkbox"
+    checked={exchangeAvailable}
+    onChange={(e) =>
+      setExchangeAvailable(e.target.checked)
+    }
+  />
+
+  Exchange Available
+</label>
 
         <input
   type="file"

@@ -118,6 +118,8 @@ router.post("/", authMiddleware, async (req, res) => {
       price,
       category,
       image,
+      stock,
+      exchangeAvailable,
     } = req.body;
 
     if (req.user.role !== "seller") {
@@ -127,13 +129,15 @@ router.post("/", authMiddleware, async (req, res) => {
     }
 
     const product = await Product.create({
-      name,
-      description,
-      price,
-      category,
-      image,
-      UserId: req.user.id,
-    });
+  name,
+  description,
+  price,
+  category,
+  image,
+  stock,
+  exchangeAvailable,
+  UserId: req.user.id,
+});
 
     res.status(201).json(product);
   } catch (error) {
@@ -170,6 +174,8 @@ router.put("/:id", authMiddleware, async (req, res) => {
       price,
       image,
       category,
+      stock,
+      exchangeAvailable,
     } = req.body;
 
     await product.update({
@@ -178,6 +184,8 @@ router.put("/:id", authMiddleware, async (req, res) => {
       price,
       image,
       category,
+      stock,
+      exchangeAvailable,
     });
 
     res.json(product);
