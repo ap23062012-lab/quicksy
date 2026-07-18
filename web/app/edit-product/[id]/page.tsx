@@ -12,6 +12,8 @@ export default function EditProductPage() {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [image, setImage] = useState("");
+  const [stock, setStock] = useState(0);
+const [exchangeAvailable, setExchangeAvailable] = useState(true);
 
   useEffect(() => {
     fetchProduct();
@@ -30,6 +32,8 @@ export default function EditProductPage() {
       setPrice(data.price || "");
       setCategory(data.category || "");
       setImage(data.image || "");
+      setStock(data.stock || 0);
+setExchangeAvailable(data.exchangeAvailable);
     } catch (error) {
       console.error(error);
     }
@@ -55,6 +59,8 @@ export default function EditProductPage() {
             price,
             category,
             image,
+            stock,
+            exchangeAvailable,
           }),
         }
       );
@@ -105,7 +111,16 @@ export default function EditProductPage() {
           onChange={(e) => setPrice(e.target.value)}
         />
 
+        <input
+  className="border p-3 w-full mb-4 rounded"
+  placeholder="Stock Quantity"
+  type="number"
+  value={stock}
+  onChange={(e) => setStock(Number(e.target.value))}
+/>
+
         <select
+        
           className="border p-3 w-full mb-4 rounded"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -127,6 +142,18 @@ export default function EditProductPage() {
           <option value="Furniture">Furniture</option>
           <option value="Others">Others</option>
         </select>
+
+        <label className="flex items-center gap-3 mb-4">
+  <input
+    type="checkbox"
+    checked={exchangeAvailable}
+    onChange={(e) =>
+      setExchangeAvailable(e.target.checked)
+    }
+  />
+
+  Exchange Available
+</label>
 
         <input
   type="file"

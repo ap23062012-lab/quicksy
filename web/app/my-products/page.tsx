@@ -2,8 +2,20 @@
 
 import { useEffect, useState } from "react";
 
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  category: string;
+  stock: number;
+  sold: number;
+  exchangeAvailable: boolean;
+}
+
 export default function MyProductsPage() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -83,7 +95,7 @@ export default function MyProductsPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-4xl font-bold text-center mb-8">
-        My Products
+        My Products/Inventory
       </h1>
 
       {products.length === 0 ? (
@@ -116,6 +128,46 @@ export default function MyProductsPage() {
               <p className="text-2xl font-bold mt-4">
                 ₹{product.price}
               </p>
+              <div className="mt-3 space-y-2">
+
+  <p>
+    📦 Stock:
+    <span className="font-bold ml-2">
+      {product.stock}
+    </span>
+  </p>
+
+  <p>
+    🛒 Sold:
+    <span className="font-bold ml-2">
+      {product.sold}
+    </span>
+  </p>
+
+  <p>
+    🔄 Exchange:
+    <span className="font-bold ml-2">
+      {product.exchangeAvailable
+        ? "✅ Available"
+        : "❌ Not Available"}
+    </span>
+  </p>
+
+  {product.stock === 0 ? (
+    <p className="text-red-600 font-bold">
+      🔴 Out Of Stock
+    </p>
+  ) : product.stock <= 5 ? (
+    <p className="text-orange-600 font-bold">
+      🟡 Low Stock
+    </p>
+  ) : (
+    <p className="text-green-600 font-bold">
+      🟢 In Stock
+    </p>
+  )}
+
+</div>
 
               <div className="flex gap-2 mt-4">
                 <a
@@ -123,7 +175,7 @@ export default function MyProductsPage() {
                   className="w-1/2"
                 >
                   <button className="bg-blue-600 text-white px-4 py-2 rounded-lg w-full">
-                    Edit
+                    ✏️ Edit
                   </button>
                 </a>
 
@@ -133,7 +185,7 @@ export default function MyProductsPage() {
                   }
                   className="bg-red-600 text-white px-4 py-2 rounded-lg w-1/2"
                 >
-                  Delete
+                  🗑️ Delete
                 </button>
               </div>
             </div>

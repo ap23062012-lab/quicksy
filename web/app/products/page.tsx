@@ -10,6 +10,11 @@ interface Product {
   price: number;
   image?: string;
   category?: string;
+
+  stock: number;
+  sold: number;
+  exchangeAvailable: boolean;
+
   createdAt?: string;
 }
 
@@ -325,30 +330,63 @@ export default function ProductsPage() {
               <p className="text-2xl font-bold mt-4">
                 ₹{product.price}
               </p>
+              <div className="mt-3 space-y-1">
+
+  {product.stock === 0 ? (
+    <p className="text-red-600 font-bold">
+      🔴 Out of Stock
+    </p>
+  ) : product.stock <= 5 ? (
+    <p className="text-orange-600 font-bold">
+      🟡 Only {product.stock} left
+    </p>
+  ) : (
+    <p className="text-green-600 font-bold">
+      🟢 In Stock
+    </p>
+  )}
+
+</div>
 
               <div className="flex gap-2 mt-5">
 
                 <button
+  disabled={product.stock === 0}
   onClick={(e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (product.stock === 0) return;
+
     addToCart(product.id);
   }}
-  className="bg-black text-white px-4 py-2 rounded-lg w-1/2 hover:bg-gray-800 transition"
+  className={`w-1/2 px-4 py-2 rounded-lg text-white ${
+    product.stock === 0
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-black hover:bg-gray-800"
+  }`}
 >
   Add to Cart
 </button>
 
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    buyNow(product.id);
-                  }}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg w-1/2 hover:bg-green-700 transition"
-                >
-                  Buy Now
-                </button>
+<button
+  disabled={product.stock === 0}
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (product.stock === 0) return;
+
+    buyNow(product.id);
+  }}
+  className={`w-1/2 px-4 py-2 rounded-lg text-white ${
+    product.stock === 0
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-green-600 hover:bg-green-700"
+  }`}
+>
+  Buy Now
+</button>
 
               </div>
             </div>

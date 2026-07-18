@@ -10,6 +10,10 @@ interface Product {
   price: number;
   image: string;
   category: string;
+
+  stock: number;
+  sold: number;
+  exchangeAvailable: boolean;
 }
 
 interface Review {
@@ -131,6 +135,32 @@ const averageRating =
       <p className="text-3xl font-bold mt-5">
         ₹{product.price}
       </p>
+      <div className="mt-4 space-y-2">
+
+  {product.stock === 0 ? (
+    <p className="text-red-600 font-bold text-lg">
+      🔴 Out of Stock
+    </p>
+  ) : product.stock <= 5 ? (
+    <p className="text-orange-600 font-bold text-lg">
+      🟡 Only {product.stock} left
+    </p>
+  ) : (
+    <p className="text-green-600 font-bold text-lg">
+      🟢 In Stock ({product.stock} available)
+    </p>
+  )}
+
+  <p className="text-gray-600">
+    Sold: {product.sold}
+  </p>
+
+  <p className="text-gray-600">
+    Exchange:
+    {product.exchangeAvailable ? " ✅ Available" : " ❌ Not Available"}
+  </p>
+
+</div>
       <div className="mt-3 flex items-center gap-3">
   <span className="text-yellow-500 text-xl">
     ⭐ {averageRating}
