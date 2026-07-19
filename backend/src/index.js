@@ -23,6 +23,7 @@ require("./models/Order");
 require("./models/Wishlist");
 require("./models/Review");
 require("./models/ReturnRequest");
+require("./models/ExchangeRequest");
 
 const app = express();
 

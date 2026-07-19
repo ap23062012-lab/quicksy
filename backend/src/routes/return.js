@@ -104,4 +104,78 @@ router.get("/my", authMiddleware, async (req, res) => {
   }
 });
 
+/*
+==================================
+SELLER VIEW RETURN/EXCHANGE REQUESTS
+==================================
+*/
+
+router.get("/seller", authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== "seller") {
+      return res.status(403).json({
+        message: "Only sellers can access this",
+      });
+    }
+
+    const requests = await ReturnRequest.findAll({
+      include: [Order],
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.json(requests);
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
+
+
+/*
+==================================
+SELLER APPROVE / REJECT
+==================================
+*/
+
+router.put("/:id/status", authMiddleware, async (req, res) => {
+  try {
+
+    if (req.user.role !== "seller") {
+      return res.status(403).json({
+        message: "Only sellers can update requests",
+      });
+    }
+
+    const request = await ReturnRequest.findByPk(req.params.id);
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Request not found",
+      });
+    }
+
+    const { status } = req.body;
+
+    request.status = status;
+
+    await request.save();
+
+    res.json({
+      message: "Status updated",
+      request,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+});
+
 module.exports = router;
