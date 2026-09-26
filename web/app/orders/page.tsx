@@ -131,17 +131,47 @@ export default function OrdersPage() {
               {order.products.map(
                 (product: any, index: number) => (
                   <div
-                    key={index}
-                    className="flex justify-between mb-2"
-                  >
-                    <span>
-                      {product.name} × {product.quantity}
-                    </span>
+  key={index}
+  className="border rounded-lg p-3 mb-3"
+>
+  <div className="flex justify-between">
+    <span>
+      {product.name} × {product.quantity}
+    </span>
 
-                    <span>
-                      ₹{product.price}
-                    </span>
-                  </div>
+    <span>
+      ₹{product.price}
+    </span>
+  </div>
+
+  {order.status === "Delivered" && (
+    <div className="flex gap-3 mt-3">
+
+      <button
+        onClick={() =>
+          window.location.href =
+            `/returns/create?orderId=${order.id}&type=return`
+        }
+        className="bg-orange-600 text-white px-4 py-2 rounded-lg"
+      >
+        Return
+      </button>
+
+      {product.exchangeAvailable && (
+        <button
+          onClick={() =>
+            window.location.href =
+              `/returns/create?orderId=${order.id}&type=exchange`
+          }
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+        >
+          Exchange
+        </button>
+      )}
+
+    </div>
+  )}
+</div>
                 )
               )}
 

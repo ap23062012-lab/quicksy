@@ -103,12 +103,17 @@ export default function CheckoutPage() {
           },
           body: JSON.stringify({
   products: items.map((item: any) => ({
-    id: item.Product?.id,
-    name: item.Product?.name,
-    price: item.Product?.price,
-    quantity: item.quantity,
-    sellerId: item.Product?.UserId,
-  })),
+  id: item.Product?.id,
+  name: item.Product?.name,
+  price: item.Product?.price,
+  quantity: item.quantity,
+  sellerId: item.Product?.UserId,
+
+  exchangeAvailable:
+    item.Product?.exchangeAvailable,
+
+  stock: item.Product?.stock,
+})),
 
   totalAmount: total,
 
