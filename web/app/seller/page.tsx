@@ -81,16 +81,24 @@ export default function SellerPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-4xl font-bold text-center mb-8">
-        Seller Dashboard
-      </h1>
+      
+      {/* 👇 UPDATED HEADER SECTION 👇 */}
+      <div className="flex justify-between items-center mb-8 max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold">Seller Dashboard</h1>
+        <a
+          href="/seller/returns"
+          className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-bold shadow-md"
+        >
+          🔄 Manage Returns
+        </a>
+      </div>
 
       {orders.length === 0 ? (
         <div className="text-center text-gray-600">
           No Orders Yet
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-4xl mx-auto">
           {orders.map((order) => (
             <div
               key={order.id}
@@ -101,129 +109,79 @@ export default function SellerPage() {
                   <h2 className="text-xl font-bold">
                     Order #{order.id}
                   </h2>
-
                   <p className="text-gray-600">
                     Status: {order.status}
                   </p>
                 </div>
-
                 <div className="text-right">
                   <p className="font-bold">
                     ₹{order.totalAmount}
                   </p>
-
                   <p className="text-gray-500">
-                    {new Date(
-                      order.createdAt
-                    ).toLocaleDateString()}
+                    {new Date(order.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
 
               <hr className="mb-4" />
 
-              <h3 className="font-bold mb-2">
-                Products Sold
-              </h3>
+              <h3 className="font-bold mb-2">Products Sold</h3>
 
-              {order.products.map(
-                (product: any, index: number) => (
-                  <div
-                    key={index}
-                    className="flex justify-between mb-2"
-                  >
-                    <span>
-                      {product.name} ×{" "}
-                      {product.quantity}
-                    </span>
-
-                    <span>
-                      ₹{product.price}
-                    </span>
-                  </div>
-                )
-              )}
+              {order.products.map((product: any, index: number) => (
+                <div key={index} className="flex justify-between mb-2">
+                  <span>
+                    {product.name} × {product.quantity}
+                  </span>
+                  <span>₹{product.price}</span>
+                </div>
+              ))}
 
               <hr className="my-4" />
 
-              <h3 className="font-bold mb-2">
-                Delivery Address
-              </h3>
+              <h3 className="font-bold mb-2">Delivery Address</h3>
 
               {order.shippingAddress ? (
                 <div className="text-gray-700">
-                  <p>
-                    <strong>Name:</strong>{" "}
-                    {order.shippingAddress.fullName}
-                  </p>
-
-                  <p>
-                    <strong>Phone:</strong>{" "}
-                    {order.shippingAddress.phone}
-                  </p>
-
-                  <p>
-                    <strong>House:</strong>{" "}
-                    {order.shippingAddress.house}
-                  </p>
-
-                  <p>
-                    <strong>Area:</strong>{" "}
-                    {order.shippingAddress.area}
-                  </p>
-
-                  <p>
-                    <strong>City:</strong>{" "}
-                    {order.shippingAddress.city}
-                  </p>
-
-                  <p>
-                    <strong>State:</strong>{" "}
-                    {order.shippingAddress.state}
-                  </p>
-
-                  <p>
-                    <strong>Pincode:</strong>{" "}
-                    {order.shippingAddress.pincode}
-                  </p>
+                  <p><strong>Name:</strong> {order.shippingAddress.fullName}</p>
+                  <p><strong>Phone:</strong> {order.shippingAddress.phone}</p>
+                  <p><strong>House:</strong> {order.shippingAddress.house}</p>
+                  <p><strong>Area:</strong> {order.shippingAddress.area}</p>
+                  <p><strong>City:</strong> {order.shippingAddress.city}</p>
+                  <p><strong>State:</strong> {order.shippingAddress.state}</p>
+                  <p><strong>Pincode:</strong> {order.shippingAddress.pincode}</p>
                 </div>
               ) : (
                 <p>No address found</p>
               )}
 
-             <div className="flex gap-4 mt-6">
-
-  {order.status === "Pending" && (
-    <button
-      onClick={() => updateStatus(order.id, "Shipped")}
-      className="bg-blue-600 text-white px-4 py-2 rounded"
-    >
-      Mark as Shipped
-    </button>
-  )}
-
-  {order.status === "Shipped" && (
-    <button
-      onClick={() => updateStatus(order.id, "Delivered")}
-      className="bg-green-600 text-white px-4 py-2 rounded"
-    >
-      Mark as Delivered
-    </button>
-  )}
-
-  {order.status === "Delivered" && (
-    <span className="bg-green-100 text-green-700 px-4 py-2 rounded font-semibold">
-      ✅ Delivered
-    </span>
-  )}
-
-  {order.status === "Cancelled" && (
-    <span className="bg-red-100 text-red-700 px-4 py-2 rounded font-semibold">
-      ❌ Order Cancelled
-    </span>
-  )}
-
-</div>
+              <div className="flex gap-4 mt-6">
+                {order.status === "Pending" && (
+                  <button
+                    onClick={() => updateStatus(order.id, "Shipped")}
+                    className="bg-blue-600 text-white px-4 py-2 rounded"
+                  >
+                    Mark as Shipped
+                  </button>
+                )}
+                {order.status === "Shipped" && (
+                  <button
+                    onClick={() => updateStatus(order.id, "Delivered")}
+                    className="bg-green-600 text-white px-4 py-2 rounded"
+                  >
+                    Mark as Delivered
+                  </button>
+                )}
+                {order.status === "Delivered" && (
+                  <span className="bg-green-100 text-green-700 px-4 py-2 rounded font-semibold">
+                    ✅ Delivered
+                  </span>
+                )}
+                {order.status === "Cancelled" && (
+                  <span className="bg-red-100 text-red-700 px-4 py-2 rounded font-semibold">
+                    ❌ Order Cancelled
+                  </span>
+                )}
+              </div>
             </div>
           ))}
         </div>

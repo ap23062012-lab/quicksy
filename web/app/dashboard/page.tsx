@@ -42,7 +42,6 @@ export default function DashboardPage() {
         </p>
 
         <div className="flex flex-col gap-4">
-
           <a href="/profile">
             <button className="bg-blue-600 text-white px-6 py-3 rounded-lg w-full">
               View Profile
@@ -50,7 +49,6 @@ export default function DashboardPage() {
           </a>
 
           {/* CUSTOMER MENU */}
-
           {role === "customer" && (
             <>
               <a href="/products">
@@ -58,19 +56,16 @@ export default function DashboardPage() {
                   Products
                 </button>
               </a>
-
               <a href="/cart">
                 <button className="bg-orange-600 text-white px-6 py-3 rounded-lg w-full">
                   My Cart
                 </button>
               </a>
-
               <a href="/address">
                 <button className="bg-red-600 text-white px-6 py-3 rounded-lg w-full">
                   My Address
                 </button>
               </a>
-
               <a href="/orders">
                 <button className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full">
                   Your Orders
@@ -80,7 +75,6 @@ export default function DashboardPage() {
           )}
 
           {/* SELLER MENU */}
-
           {role === "seller" && (
             <>
               <a href="/add-product">
@@ -88,16 +82,21 @@ export default function DashboardPage() {
                   Add Product
                 </button>
               </a>
-
               <a href="/my-products">
                 <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg w-full">
                   My Products
                 </button>
               </a>
-
               <a href="/seller">
                 <button className="bg-teal-600 text-white px-6 py-3 rounded-lg w-full">
                   Seller Dashboard
+                </button>
+              </a>
+              
+              {/* 👇 ADDED THIS BUTTON 👇 */}
+              <a href="/seller/returns">
+                <button className="bg-yellow-600 text-white px-6 py-3 rounded-lg w-full">
+                  Manage Returns & Exchanges
                 </button>
               </a>
             </>
@@ -109,7 +108,6 @@ export default function DashboardPage() {
           >
             Logout
           </button>
-
         </div>
       </div>
     </div>
