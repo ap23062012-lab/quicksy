@@ -27,7 +27,7 @@ export default function OrdersPage() {
       }
     } catch (error) {
       console.error(error);
-      alert("Server error");
+      alert("Server error loading orders");
     } finally {
       setLoading(false);
     }
@@ -41,15 +41,22 @@ export default function OrdersPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();
+      
+      // This will print in the browser console (F12) so we can see what's happening
+      console.log("RETURN REQUESTS FROM BACKEND:", data);
+      
       if (res.ok && Array.isArray(data)) {
         const map: Record<number, any> = {};
         data.forEach((r: any) => {
-          map[r.OrderId] = r;
+          // Force the ID to be a Number to ensure it matches order.id
+          map[Number(r.OrderId)] = r; 
         });
         setRequestsByOrder(map);
+      } else {
+        console.error("Failed to fetch requests:", data);
       }
     } catch (error) {
-      console.error("Failed to load return requests", error);
+      console.error("Network error loading return requests", error);
     }
   };
 
@@ -96,7 +103,10 @@ export default function OrdersPage() {
       ) : (
         <div className="space-y-6">
           {orders.map((order, orderIndex) => {
-            const existingRequest = requestsByOrder[order.id];
+            // Check if this order has a request
+            const existingRequest = requestsByOrder[Number(order.id)];
+            
+            // Check if ANY product in this order allows exchange
             const anyExchangeable = order.products.some(
               (p: any) => p.exchangeAvailable === true
             );
@@ -133,6 +143,7 @@ export default function OrdersPage() {
                   </div>
                 ))}
 
+                {/* ONLY SHOW BUTTONS IF DELIVERED AND NO REQUEST EXISTS */}
                 {order.status === "Delivered" && !existingRequest && (
                   <div className="flex gap-3 mt-3">
                     <button
@@ -157,6 +168,7 @@ export default function OrdersPage() {
                   </div>
                 )}
 
+                {/* SHOW STATUS INSTEAD OF BUTTONS IF REQUEST EXISTS */}
                 {existingRequest && (
                   <div className="mt-3 p-3 rounded-lg bg-gray-50 border">
                     <span className="font-bold">
