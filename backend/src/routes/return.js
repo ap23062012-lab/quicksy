@@ -3,6 +3,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const ReturnRequest = require("../models/ReturnRequest");
 const Order = require("../models/Order");
+const Product = require("../models/Product"); // 👈 ADDED THIS
 
 const router = express.Router();
 
@@ -45,7 +46,7 @@ router.post("/", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "Return period has expired (7 days)." });
     }
 
-    // ✅ NEW: prevent duplicate requests for the same order
+    // Prevent duplicate requests
     const existing = await ReturnRequest.findOne({
       where: { OrderId: order.id },
     });
@@ -55,7 +56,7 @@ router.post("/", authMiddleware, async (req, res) => {
       });
     }
 
-    // ✅ NEW: exchange-specific validation (uses order snapshot saved at checkout)
+    // Exchange-specific validation
     if (type === "Exchange") {
       const products = Array.isArray(order.products) ? order.products : [];
       const exchangeable = products.filter(
@@ -64,8 +65,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
       if (exchangeable.length === 0) {
         return res.status(400).json({
-          message:
-            "Exchange is not available for the product(s) in this order (exchange disabled or out of stock).",
+          message: "Exchange is not available for the product(s) in this order (exchange disabled or out of stock).",
         });
       }
     }
@@ -120,11 +120,8 @@ router.get("/seller", authMiddleware, async (req, res) => {
       order: [["createdAt", "DESC"]],
     });
 
-    // ✅ NEW: only show requests where the order contains a product owned by this seller
     const myRequests = allRequests.filter((request) => {
-      const products = Array.isArray(request.Order?.products)
-        ? request.Order.products
-        : [];
+      const products = Array.isArray(request.Order?.products) ? request.Order.products : [];
       return products.some((p) => Number(p.sellerId) === Number(req.user.id));
     });
 
@@ -137,7 +134,7 @@ router.get("/seller", authMiddleware, async (req, res) => {
 
 /*
 ==================================
-SELLER APPROVE / REJECT
+SELLER APPROVE / REJECT (WITH STOCK UPDATE)
 ==================================
 */
 router.put("/:id/status", authMiddleware, async (req, res) => {
@@ -158,10 +155,28 @@ router.put("/:id/status", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "Status must be Approved or Rejected" });
     }
 
+    // 👇 ADDED STOCK UPDATE LOGIC HERE 👇
+    // Only add stock back if it's being approved for the first time
+    if (status === "Approved" && request.status !== "Approved") {
+      const order = await Order.findByPk(request.OrderId);
+      
+      if (order && Array.isArray(order.products)) {
+        for (const item of order.products) {
+          const product = await Product.findByPk(item.id);
+          if (product) {
+            // Add the returned quantity back to the stock
+            product.stock = Number(product.stock) + Number(item.quantity);
+            await product.save();
+          }
+        }
+      }
+    }
+    // 👆 END OF STOCK UPDATE LOGIC 👆
+
     request.status = status;
     await request.save();
 
-    res.json({ message: "Status updated", request });
+    res.json({ message: `Request ${status}`, request });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
