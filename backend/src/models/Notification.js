@@ -12,10 +12,10 @@ const Notification = sequelize.define("Notification", {
   },
   link: {
     type: DataTypes.STRING,
-    allowNull: true, // e.g., "/orders"
+    allowNull: true,
   },
   UserId: {
-    type: DataTypes.UUID, // Using UUID if your User model uses UUIDs
+    type: DataTypes.INTEGER, // 👈 FIXED TO INTEGER
     allowNull: false,
   }
 });
