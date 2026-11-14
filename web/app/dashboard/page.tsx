@@ -28,9 +28,9 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <div className="bg-white p-10 rounded-xl shadow-md text-center w-[400px]">
-        <h1 className="text-4xl font-bold mb-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+      <div className="bg-white p-6 md:p-10 rounded-xl shadow-md text-center w-full max-w-[400px]">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">
           🎉 Welcome to QUICKSY
         </h1>
 
@@ -45,7 +45,7 @@ export default function DashboardPage() {
             </button>
           </a>
 
-          {/* 👇 ADDED ADMIN MENU 👇 */}
+          {/* ADMIN MENU */}
           {role === "admin" && (
             <>
               <a href="/admin">
