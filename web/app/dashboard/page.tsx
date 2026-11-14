@@ -7,7 +7,6 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     if (!token) {
       window.location.href = "/login";
       return;
@@ -35,10 +34,8 @@ export default function DashboardPage() {
           🎉 Welcome to QUICKSY
         </h1>
 
-        <p className="text-gray-600 mb-6">
-          {role === "seller"
-            ? "Seller Dashboard"
-            : "Customer Dashboard"}
+        <p className="text-gray-600 mb-6 capitalize">
+          {role} Dashboard
         </p>
 
         <div className="flex flex-col gap-4">
@@ -48,43 +45,12 @@ export default function DashboardPage() {
             </button>
           </a>
 
-          {/* CUSTOMER MENU */}
-          {role === "customer" && (
+          {/* 👇 ADDED ADMIN MENU 👇 */}
+          {role === "admin" && (
             <>
-              <a href="/products">
-                <button className="bg-green-600 text-white px-6 py-3 rounded-lg w-full">
-                  Products
-                </button>
-              </a>
-              <a href="/cart">
-                <button className="bg-orange-600 text-white px-6 py-3 rounded-lg w-full">
-                  My Cart
-                </button>
-              </a>
-              <a href="/address">
-                <button className="bg-red-600 text-white px-6 py-3 rounded-lg w-full">
-                  My Address
-                </button>
-              </a>
-              <a href="/orders">
-                <button className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full">
-                  Your Orders
-                </button>
-              </a>
-            </>
-          )}
-
-          {/* SELLER MENU */}
-          {role === "seller" && (
-            <>
-              <a href="/add-product">
-                <button className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full">
-                  Add Product
-                </button>
-              </a>
-              <a href="/my-products">
-                <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg w-full">
-                  My Products
+              <a href="/admin">
+                <button className="bg-red-600 text-white px-6 py-3 rounded-lg w-full font-bold">
+                  👑 Admin Control Panel
                 </button>
               </a>
               <a href="/seller">
@@ -92,19 +58,32 @@ export default function DashboardPage() {
                   Seller Dashboard
                 </button>
               </a>
-              
-              {/* 👇 ADDED THIS BUTTON 👇 */}
-              <a href="/seller/returns">
-                <button className="bg-yellow-600 text-white px-6 py-3 rounded-lg w-full">
-                  Manage Returns & Exchanges
-                </button>
-              </a>
+            </>
+          )}
+
+          {/* CUSTOMER MENU */}
+          {role === "customer" && (
+            <>
+              <a href="/products"><button className="bg-green-600 text-white px-6 py-3 rounded-lg w-full">Products</button></a>
+              <a href="/cart"><button className="bg-orange-600 text-white px-6 py-3 rounded-lg w-full">My Cart</button></a>
+              <a href="/address"><button className="bg-red-600 text-white px-6 py-3 rounded-lg w-full">My Address</button></a>
+              <a href="/orders"><button className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full">Your Orders</button></a>
+            </>
+          )}
+
+          {/* SELLER MENU */}
+          {role === "seller" && (
+            <>
+              <a href="/add-product"><button className="bg-purple-600 text-white px-6 py-3 rounded-lg w-full">Add Product</button></a>
+              <a href="/my-products"><button className="bg-indigo-600 text-white px-6 py-3 rounded-lg w-full">My Products</button></a>
+              <a href="/seller"><button className="bg-teal-600 text-white px-6 py-3 rounded-lg w-full">Seller Dashboard</button></a>
+              <a href="/seller/returns"><button className="bg-yellow-600 text-white px-6 py-3 rounded-lg w-full">Manage Returns</button></a>
             </>
           )}
 
           <button
             onClick={handleLogout}
-            className="bg-black text-white px-6 py-3 rounded-lg"
+            className="bg-black text-white px-6 py-3 rounded-lg mt-4"
           >
             Logout
           </button>

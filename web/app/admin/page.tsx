@@ -1,0 +1,165 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState("users");
+  const [users, setUsers] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    const headers = { Authorization: `Bearer ${token}` };
+
+    try {
+      const [usersRes, productsRes, ordersRes] = await Promise.all([
+        fetch("https://quicksy-5xdh.onrender.com/api/v1/admin/users", { headers }),
+        fetch("https://quicksy-5xdh.onrender.com/api/v1/admin/products", { headers }),
+        fetch("https://quicksy-5xdh.onrender.com/api/v1/admin/orders", { headers }),
+      ]);
+
+      if (usersRes.ok) setUsers(await usersRes.json());
+      if (productsRes.ok) setProducts(await productsRes.json());
+      if (ordersRes.ok) setOrders(await ordersRes.json());
+      
+      if (!usersRes.ok) {
+        alert("Access Denied. Are you an admin?");
+        window.location.href = "/dashboard";
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error fetching admin data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteProduct = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+    
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`https://quicksy-5xdh.onrender.com/api/v1/admin/products/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        alert("Product deleted");
+        setProducts(products.filter((p) => p.id !== id));
+      } else {
+        alert("Failed to delete product");
+      }
+    } catch (error) {
+      alert("Server error");
+    }
+  };
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-2xl font-bold">Loading Admin Dashboard...</div>;
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-8">
+      <h1 className="text-4xl font-bold text-center mb-8 text-red-600">👑 Admin Dashboard</h1>
+
+      {/* TABS */}
+      <div className="flex justify-center gap-4 mb-8">
+        <button onClick={() => setActiveTab("users")} className={`px-6 py-2 rounded-lg font-bold ${activeTab === "users" ? "bg-blue-600 text-white" : "bg-white text-gray-700"}`}>Users ({users.length})</button>
+        <button onClick={() => setActiveTab("products")} className={`px-6 py-2 rounded-lg font-bold ${activeTab === "products" ? "bg-blue-600 text-white" : "bg-white text-gray-700"}`}>Products ({products.length})</button>
+        <button onClick={() => setActiveTab("orders")} className={`px-6 py-2 rounded-lg font-bold ${activeTab === "orders" ? "bg-blue-600 text-white" : "bg-white text-gray-700"}`}>Orders ({orders.length})</button>
+      </div>
+
+      {/* USERS TAB */}
+      {activeTab === "users" && (
+        <div className="bg-white rounded-xl shadow p-6 overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b bg-gray-50">
+                <th className="p-3">ID</th>
+                <th className="p-3">Name</th>
+                <th className="p-3">Email</th>
+                <th className="p-3">Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id} className="border-b">
+                  <td className="p-3">{u.id}</td>
+                  <td className="p-3">{u.name}</td>
+                  <td className="p-3">{u.email}</td>
+                  <td className="p-3 font-bold text-blue-600 capitalize">{u.role}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* PRODUCTS TAB */}
+      {activeTab === "products" && (
+        <div className="bg-white rounded-xl shadow p-6 overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b bg-gray-50">
+                <th className="p-3">ID</th>
+                <th className="p-3">Product Name</th>
+                <th className="p-3">Price</th>
+                <th className="p-3">Stock</th>
+                <th className="p-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((p) => (
+                <tr key={p.id} className="border-b">
+                  <td className="p-3">{p.id}</td>
+                  <td className="p-3 font-bold">{p.name}</td>
+                  <td className="p-3">₹{p.price}</td>
+                  <td className="p-3">{p.stock}</td>
+                  <td className="p-3">
+                    <button onClick={() => deleteProduct(p.id)} className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ORDERS TAB */}
+      {activeTab === "orders" && (
+        <div className="bg-white rounded-xl shadow p-6 overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b bg-gray-50">
+                <th className="p-3">Order ID</th>
+                <th className="p-3">Total Amount</th>
+                <th className="p-3">Status</th>
+                <th className="p-3">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((o) => (
+                <tr key={o.id} className="border-b">
+                  <td className="p-3">#{o.id}</td>
+                  <td className="p-3 font-bold">₹{o.totalAmount}</td>
+                  <td className="p-3">
+                     <span className="bg-gray-200 px-2 py-1 rounded text-sm">{o.status}</span>
+                  </td>
+                  <td className="p-3">{new Date(o.createdAt).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+    </div>
+  );
+}
