@@ -13,6 +13,7 @@ const orderRoutes = require("./routes/order");
 const wishlistRoutes = require("./routes/wishlist");
 const reviewRoutes = require("./routes/review");
 const returnRoutes = require("./routes/return");
+const adminRoutes = require("./routes/admin"); // 👈 ADDED THIS LINE
 
 // MODELS
 require("./models/User");
@@ -42,6 +43,7 @@ app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/wishlist", wishlistRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/returns", returnRoutes);
+app.use("/api/v1/admin", adminRoutes); // 👈 ADDED THIS LINE
 
 // HEALTH CHECK
 app.get("/api/v1/health", (req, res) => {
