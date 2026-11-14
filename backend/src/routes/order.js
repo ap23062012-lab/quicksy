@@ -1,6 +1,7 @@
 const express = require("express");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const Notification = require("../models/Notification"); // 👈 Added here
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -11,19 +12,13 @@ const router = express.Router();
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const orders = await Order.findAll({
-      where: {
-        UserId: req.user.id,
-      },
+      where: { UserId: req.user.id },
       order: [["createdAt", "DESC"]],
     });
-
     res.json(orders);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -33,9 +28,7 @@ router.get("/", authMiddleware, async (req, res) => {
 router.get("/seller-orders", authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== "seller") {
-      return res.status(403).json({
-        message: "Only sellers can access this",
-      });
+      return res.status(403).json({ message: "Only sellers can access this" });
     }
 
     const allOrders = await Order.findAll({
@@ -45,18 +38,13 @@ router.get("/seller-orders", authMiddleware, async (req, res) => {
     const sellerOrders = allOrders.filter(
       (order) =>
         order.products &&
-        order.products.some(
-          (product) => product.sellerId === req.user.id
-        )
+        order.products.some((product) => product.sellerId === req.user.id)
     );
 
     res.json(sellerOrders);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -67,41 +55,17 @@ router.put("/:id/cancel", authMiddleware, async (req, res) => {
   try {
     const order = await Order.findByPk(req.params.id);
 
-    if (!order) {
-      return res.status(404).json({
-        message: "Order not found",
-      });
-    }
-
-    // Only owner can cancel
-    if (order.UserId !== req.user.id) {
-      return res.status(403).json({
-        message: "Unauthorized",
-      });
-    }
-
-    // Only Pending orders
-    if (order.status !== "Pending") {
-      return res.status(400).json({
-        message: "Only pending orders can be cancelled",
-      });
-    }
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (order.UserId !== req.user.id) return res.status(403).json({ message: "Unauthorized" });
+    if (order.status !== "Pending") return res.status(400).json({ message: "Only pending orders can be cancelled" });
 
     order.status = "Cancelled";
-
     await order.save();
 
-    res.json({
-      message: "Order cancelled successfully",
-      order,
-    });
-
+    res.json({ message: "Order cancelled successfully", order });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -111,52 +75,40 @@ router.put("/:id/cancel", authMiddleware, async (req, res) => {
 router.put("/:id/status", authMiddleware, async (req, res) => {
   try {
     if (req.user.role !== "seller") {
-      return res.status(403).json({
-        message: "Only sellers can update status",
-      });
+      return res.status(403).json({ message: "Only sellers can update status" });
     }
 
     const { status } = req.body;
-
     const order = await Order.findByPk(req.params.id);
-    // Don't allow updating cancelled orders
-if (order.status === "Cancelled") {
-  return res.status(400).json({
-    message: "Cancelled orders cannot be updated.",
-  });
-}
 
-    if (!order) {
-      return res.status(404).json({
-        message: "Order not found",
-      });
-    }
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    if (order.status === "Cancelled") return res.status(400).json({ message: "Cancelled orders cannot be updated." });
 
     // Allowed status flow
-if (
-  (order.status === "Pending" && status === "Shipped") ||
-  (order.status === "Shipped" && status === "Delivered")
-) {
-  order.status = status;
-} else {
-  return res.status(400).json({
-    message: "Invalid status update.",
-  });
-}
+    if (
+      (order.status === "Pending" && status === "Shipped") ||
+      (order.status === "Shipped" && status === "Delivered")
+    ) {
+      order.status = status;
+    } else {
+      return res.status(400).json({ message: "Invalid status update." });
+    }
 
     await order.save();
 
-    res.json({
-      message: "Order status updated",
-      order,
-    });
+    // 👇 NOTIFICATION LOGIC HERE 👇
+    if (status === "Shipped" || status === "Delivered") {
+      await Notification.create({
+        UserId: order.UserId, // The buyer
+        message: `Your order #${order.id} has been ${status.toLowerCase()}!`,
+        link: "/orders"
+      });
+    }
 
+    res.json({ message: "Order status updated", order });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -165,31 +117,15 @@ if (
 // ==============================
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const {
-      products,
-      totalAmount,
-      shippingAddress,
-    } = req.body;
+    const { products, totalAmount, shippingAddress } = req.body;
 
-    // Check stock and update inventory
     for (const item of products) {
       const product = await Product.findByPk(item.id);
-
-      if (!product) {
-        return res.status(404).json({
-          message: `${item.name} not found.`,
-        });
-      }
-
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          message: `${product.name} has only ${product.stock} item(s) left in stock.`,
-        });
-      }
+      if (!product) return res.status(404).json({ message: `${item.name} not found.` });
+      if (product.stock < item.quantity) return res.status(400).json({ message: `${product.name} has only ${product.stock} item(s) left in stock.` });
 
       product.stock -= item.quantity;
       product.sold += item.quantity;
-
       await product.save();
     }
 
@@ -201,13 +137,9 @@ router.post("/", authMiddleware, async (req, res) => {
     });
 
     res.status(201).json(order);
-
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Failed to place order",
-    });
+    res.status(500).json({ message: "Failed to place order" });
   }
 });
 
