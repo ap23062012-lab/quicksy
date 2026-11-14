@@ -66,22 +66,22 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-4xl font-bold text-center mb-8 text-red-600">👑 Admin Dashboard</h1>
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+      <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 md:mb-8 text-red-600">👑 Admin Dashboard</h1>
 
       {/* TABS */}
-      <div className="flex justify-center gap-4 mb-8">
-        <button onClick={() => setActiveTab("users")} className={`px-6 py-2 rounded-lg font-bold ${activeTab === "users" ? "bg-blue-600 text-white" : "bg-white text-gray-700"}`}>Users ({users.length})</button>
-        <button onClick={() => setActiveTab("products")} className={`px-6 py-2 rounded-lg font-bold ${activeTab === "products" ? "bg-blue-600 text-white" : "bg-white text-gray-700"}`}>Products ({products.length})</button>
-        <button onClick={() => setActiveTab("orders")} className={`px-6 py-2 rounded-lg font-bold ${activeTab === "orders" ? "bg-blue-600 text-white" : "bg-white text-gray-700"}`}>Orders ({orders.length})</button>
+      <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-6">
+        <button onClick={() => setActiveTab("users")} className={`px-4 py-2 md:px-6 rounded-lg text-sm md:text-base font-bold ${activeTab === "users" ? "bg-blue-600 text-white" : "bg-white text-gray-700 shadow"}`}>Users ({users.length})</button>
+        <button onClick={() => setActiveTab("products")} className={`px-4 py-2 md:px-6 rounded-lg text-sm md:text-base font-bold ${activeTab === "products" ? "bg-blue-600 text-white" : "bg-white text-gray-700 shadow"}`}>Products ({products.length})</button>
+        <button onClick={() => setActiveTab("orders")} className={`px-4 py-2 md:px-6 rounded-lg text-sm md:text-base font-bold ${activeTab === "orders" ? "bg-blue-600 text-white" : "bg-white text-gray-700 shadow"}`}>Orders ({orders.length})</button>
       </div>
 
       {/* USERS TAB */}
       {activeTab === "users" && (
-        <div className="bg-white rounded-xl shadow p-6 overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="bg-white rounded-xl shadow p-4 md:p-6 overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[600px]">
             <thead>
-              <tr className="border-b bg-gray-50">
+              <tr className="border-b bg-gray-50 text-sm md:text-base">
                 <th className="p-3">ID</th>
                 <th className="p-3">Name</th>
                 <th className="p-3">Email</th>
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b">
+                <tr key={u.id} className="border-b text-sm md:text-base">
                   <td className="p-3">{u.id}</td>
                   <td className="p-3">{u.name}</td>
                   <td className="p-3">{u.email}</td>
@@ -104,10 +104,10 @@ export default function AdminDashboard() {
 
       {/* PRODUCTS TAB */}
       {activeTab === "products" && (
-        <div className="bg-white rounded-xl shadow p-6 overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="bg-white rounded-xl shadow p-4 md:p-6 overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[600px]">
             <thead>
-              <tr className="border-b bg-gray-50">
+              <tr className="border-b bg-gray-50 text-sm md:text-base">
                 <th className="p-3">ID</th>
                 <th className="p-3">Product Name</th>
                 <th className="p-3">Price</th>
@@ -117,13 +117,13 @@ export default function AdminDashboard() {
             </thead>
             <tbody>
               {products.map((p) => (
-                <tr key={p.id} className="border-b">
+                <tr key={p.id} className="border-b text-sm md:text-base">
                   <td className="p-3">{p.id}</td>
                   <td className="p-3 font-bold">{p.name}</td>
                   <td className="p-3">₹{p.price}</td>
                   <td className="p-3">{p.stock}</td>
                   <td className="p-3">
-                    <button onClick={() => deleteProduct(p.id)} className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+                    <button onClick={() => deleteProduct(p.id)} className="bg-red-600 text-white px-3 py-1 rounded text-sm">Delete</button>
                   </td>
                 </tr>
               ))}
@@ -134,10 +134,10 @@ export default function AdminDashboard() {
 
       {/* ORDERS TAB */}
       {activeTab === "orders" && (
-        <div className="bg-white rounded-xl shadow p-6 overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="bg-white rounded-xl shadow p-4 md:p-6 overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[600px]">
             <thead>
-              <tr className="border-b bg-gray-50">
+              <tr className="border-b bg-gray-50 text-sm md:text-base">
                 <th className="p-3">Order ID</th>
                 <th className="p-3">Total Amount</th>
                 <th className="p-3">Status</th>
@@ -146,11 +146,11 @@ export default function AdminDashboard() {
             </thead>
             <tbody>
               {orders.map((o) => (
-                <tr key={o.id} className="border-b">
+                <tr key={o.id} className="border-b text-sm md:text-base">
                   <td className="p-3">#{o.id}</td>
                   <td className="p-3 font-bold">₹{o.totalAmount}</td>
                   <td className="p-3">
-                     <span className="bg-gray-200 px-2 py-1 rounded text-sm">{o.status}</span>
+                     <span className="bg-gray-200 px-2 py-1 rounded text-xs md:text-sm">{o.status}</span>
                   </td>
                   <td className="p-3">{new Date(o.createdAt).toLocaleDateString()}</td>
                 </tr>
