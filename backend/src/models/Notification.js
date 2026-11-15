@@ -15,7 +15,7 @@ const Notification = sequelize.define("Notification", {
     allowNull: true,
   },
   UserId: {
-    type: DataTypes.INTEGER, // 👈 FIXED TO INTEGER
+    type: DataTypes.INTEGER, 
     allowNull: false,
   }
 });

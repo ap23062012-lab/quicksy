@@ -80,14 +80,14 @@ export default function SellerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       
-      {/* 👇 UPDATED HEADER SECTION 👇 */}
-      <div className="flex justify-between items-center mb-8 max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold">Seller Dashboard</h1>
+      {/* UPDATED HEADER SECTION */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 max-w-4xl mx-auto">
+        <h1 className="text-3xl md:text-4xl font-bold">Seller Dashboard</h1>
         <a
           href="/seller/returns"
-          className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-bold shadow-md"
+          className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-bold shadow-md w-full md:w-auto text-center"
         >
           🔄 Manage Returns
         </a>
@@ -102,18 +102,18 @@ export default function SellerPage() {
           {orders.map((order) => (
             <div
               key={order.id}
-              className="bg-white p-6 rounded-xl shadow"
+              className="bg-white p-4 md:p-6 rounded-xl shadow"
             >
-              <div className="flex justify-between mb-4">
+              <div className="flex flex-col md:flex-row justify-between mb-4 gap-2">
                 <div>
-                  <h2 className="text-xl font-bold">
+                  <h2 className="text-lg md:text-xl font-bold">
                     Order #{order.id}
                   </h2>
                   <p className="text-gray-600">
                     Status: {order.status}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="md:text-right">
                   <p className="font-bold">
                     ₹{order.totalAmount}
                   </p>
@@ -127,12 +127,21 @@ export default function SellerPage() {
 
               <h3 className="font-bold mb-2">Products Sold</h3>
 
+              {/* 👇 UPDATED PRODUCT LIST WITH IMAGES 👇 */}
               {order.products.map((product: any, index: number) => (
-                <div key={index} className="flex justify-between mb-2">
-                  <span>
-                    {product.name} × {product.quantity}
-                  </span>
-                  <span>₹{product.price}</span>
+                <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 border-b pb-3 gap-3">
+                  <div className="flex items-center gap-4">
+                    {product.image ? (
+                      <img src={product.image} alt={product.name} className="w-14 h-14 object-cover rounded-md border" />
+                    ) : (
+                      <div className="w-14 h-14 bg-gray-200 rounded-md flex items-center justify-center text-xs text-gray-500">No Img</div>
+                    )}
+                    <div>
+                      <p className="font-semibold text-sm md:text-base">{product.name}</p>
+                      <p className="text-gray-500 text-sm">Qty: {product.quantity}</p>
+                    </div>
+                  </div>
+                  <span className="font-bold text-sm md:text-base">₹{product.price}</span>
                 </div>
               ))}
 
@@ -158,7 +167,7 @@ export default function SellerPage() {
                 {order.status === "Pending" && (
                   <button
                     onClick={() => updateStatus(order.id, "Shipped")}
-                    className="bg-blue-600 text-white px-4 py-2 rounded"
+                    className="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-auto"
                   >
                     Mark as Shipped
                   </button>
@@ -166,7 +175,7 @@ export default function SellerPage() {
                 {order.status === "Shipped" && (
                   <button
                     onClick={() => updateStatus(order.id, "Delivered")}
-                    className="bg-green-600 text-white px-4 py-2 rounded"
+                    className="bg-green-600 text-white px-4 py-2 rounded w-full md:w-auto"
                   >
                     Mark as Delivered
                   </button>

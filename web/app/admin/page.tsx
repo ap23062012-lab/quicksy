@@ -108,7 +108,7 @@ export default function AdminDashboard() {
           <table className="w-full text-left border-collapse min-w-[600px]">
             <thead>
               <tr className="border-b bg-gray-50 text-sm md:text-base">
-                <th className="p-3">ID</th>
+                <th className="p-3">Image</th>
                 <th className="p-3">Product Name</th>
                 <th className="p-3">Price</th>
                 <th className="p-3">Stock</th>
@@ -118,7 +118,13 @@ export default function AdminDashboard() {
             <tbody>
               {products.map((p) => (
                 <tr key={p.id} className="border-b text-sm md:text-base">
-                  <td className="p-3">{p.id}</td>
+                  <td className="p-3">
+                    {p.image ? (
+                      <img src={p.image} alt={p.name} className="w-10 h-10 object-cover rounded border" />
+                    ) : (
+                      <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs">No Img</div>
+                    )}
+                  </td>
                   <td className="p-3 font-bold">{p.name}</td>
                   <td className="p-3">₹{p.price}</td>
                   <td className="p-3">{p.stock}</td>
@@ -141,6 +147,7 @@ export default function AdminDashboard() {
                 <th className="p-3">Order ID</th>
                 <th className="p-3">Total Amount</th>
                 <th className="p-3">Status</th>
+                <th className="p-3">Items Preview</th>
                 <th className="p-3">Date</th>
               </tr>
             </thead>
@@ -151,6 +158,19 @@ export default function AdminDashboard() {
                   <td className="p-3 font-bold">₹{o.totalAmount}</td>
                   <td className="p-3">
                      <span className="bg-gray-200 px-2 py-1 rounded text-xs md:text-sm">{o.status}</span>
+                  </td>
+                  <td className="p-3">
+                    {/* 👇 ADDED IMAGE PREVIEWS IN ADMIN ORDERS 👇 */}
+                    <div className="flex gap-1">
+                      {o.products && o.products.slice(0, 3).map((p: any, i: number) => (
+                         p.image ? (
+                           <img key={i} src={p.image} className="w-8 h-8 rounded-full object-cover border" title={p.name} />
+                         ) : null
+                      ))}
+                      {o.products && o.products.length > 3 && (
+                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold">+{o.products.length - 3}</div>
+                      )}
+                    </div>
                   </td>
                   <td className="p-3">{new Date(o.createdAt).toLocaleDateString()}</td>
                 </tr>

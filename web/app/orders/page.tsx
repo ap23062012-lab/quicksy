@@ -125,14 +125,21 @@ export default function OrdersPage() {
 
                 <h3 className="font-bold mb-2">Products</h3>
 
+                {/* 👇 UPDATED PRODUCT LIST WITH IMAGES 👇 */}
                 {order.products.map((product: any, index: number) => (
-                  <div key={index} className="border rounded-lg p-3 mb-3 bg-gray-50">
-                    <div className="flex justify-between text-sm md:text-base">
-                      <span>
-                        {product.name} × {product.quantity}
-                      </span>
-                      <span className="font-bold">₹{product.price}</span>
+                  <div key={index} className="border rounded-lg p-3 mb-3 bg-gray-50 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      {product.image ? (
+                        <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-md border" />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center text-xs text-gray-500">No Img</div>
+                      )}
+                      <div>
+                        <p className="font-semibold text-sm md:text-base">{product.name}</p>
+                        <p className="text-gray-500 text-sm">Qty: {product.quantity}</p>
+                      </div>
                     </div>
+                    <span className="font-bold text-sm md:text-base">₹{product.price}</span>
                   </div>
                 ))}
 
