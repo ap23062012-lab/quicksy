@@ -33,8 +33,8 @@ function WriteReviewForm() {
 
       if (res.ok) {
         alert("Review submitted successfully!");
-        // 👇 FIXED: Force a clean reload instead of Next.js router
-        window.location.href = `/product/${productId}`; 
+        // Redirect to Orders page to prevent crashing on Product page
+        window.location.href = "/orders"; 
       } else {
         alert(data.message || "Failed to submit review");
       }
