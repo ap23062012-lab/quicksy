@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 function WriteReviewForm() {
   const params = useSearchParams();
-  const router = useRouter();
   
   const productId = params.get("productId");
   const productName = params.get("productName") || "Product";
@@ -34,7 +33,8 @@ function WriteReviewForm() {
 
       if (res.ok) {
         alert("Review submitted successfully!");
-        router.push(`/product/${productId}`); // Go back to product page
+        // 👇 FIXED: Force a clean reload instead of Next.js router
+        window.location.href = `/product/${productId}`; 
       } else {
         alert(data.message || "Failed to submit review");
       }
