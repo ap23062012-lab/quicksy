@@ -125,9 +125,9 @@ export default function OrdersPage() {
 
                 <h3 className="font-bold mb-2">Products</h3>
 
-                {/* 👇 UPDATED PRODUCT LIST WITH IMAGES 👇 */}
+                {/* 👇 UPDATED PRODUCT LIST WITH IMAGES AND REVIEW BUTTON 👇 */}
                 {order.products.map((product: any, index: number) => (
-                  <div key={index} className="border rounded-lg p-3 mb-3 bg-gray-50 flex items-center justify-between">
+                  <div key={index} className="border rounded-lg p-3 mb-3 bg-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                       {product.image ? (
                         <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-md border" />
@@ -139,7 +139,22 @@ export default function OrdersPage() {
                         <p className="text-gray-500 text-sm">Qty: {product.quantity}</p>
                       </div>
                     </div>
-                    <span className="font-bold text-sm md:text-base">₹{product.price}</span>
+                    
+                    <div className="flex flex-col items-end gap-2">
+                      <span className="font-bold text-sm md:text-base">₹{product.price}</span>
+                      
+                      {/* 👇 ADDED WRITE REVIEW BUTTON HERE 👇 */}
+                      {order.status === "Delivered" && (
+                        <button
+                          onClick={() => {
+                            window.location.href = `/reviews/create?productId=${product.id}&productName=${encodeURIComponent(product.name)}`;
+                          }}
+                          className="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-bold hover:bg-yellow-200 transition shadow-sm"
+                        >
+                          ⭐ Write Review
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
 
