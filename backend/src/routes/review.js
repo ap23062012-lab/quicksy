@@ -3,6 +3,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const Review = require("../models/Review");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const User = require("../models/User"); // 👈 ADDED USER IMPORT
 
 const router = express.Router();
 
@@ -11,10 +12,12 @@ router.get("/:productId", async (req, res) => {
   try {
     const reviews = await Review.findAll({
       where: { ProductId: req.params.productId },
+      include: [{ model: User, attributes: ["name"] }], // 👈 ADDED USER INCLUDE
       order: [["createdAt", "DESC"]],
     });
     res.json(reviews);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -28,7 +31,6 @@ router.post("/", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "Valid productId and rating (1-5) are required." });
     }
 
-    // 1. Check if they already reviewed it
     const existingReview = await Review.findOne({
       where: { ProductId: productId, UserId: req.user.id },
     });
@@ -36,7 +38,6 @@ router.post("/", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "You have already reviewed this product." });
     }
 
-    // 2. Verify they actually bought it and it was delivered
     const orders = await Order.findAll({
       where: { UserId: req.user.id, status: "Delivered" },
     });
@@ -56,7 +57,6 @@ router.post("/", authMiddleware, async (req, res) => {
       });
     }
 
-    // 3. Create the review
     const review = await Review.create({
       ProductId: productId,
       UserId: req.user.id,

@@ -34,7 +34,11 @@ function WriteReviewForm() {
       if (res.ok) {
         alert("Review submitted successfully!");
         // Redirect to Orders page to prevent crashing on Product page
-        window.location.href = "/orders"; 
+              if (res.ok) {
+        alert("Review submitted successfully!");
+        // Redirect back to the product page
+        window.location.href = `/product/${productId}`; 
+      }
       } else {
         alert(data.message || "Failed to submit review");
       }
