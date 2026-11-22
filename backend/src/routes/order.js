@@ -59,19 +59,16 @@ router.put("/:id/cancel", authMiddleware, async (req, res) => {
     if (order.UserId !== req.user.id) return res.status(403).json({ message: "Unauthorized" });
     if (order.status !== "Pending") return res.status(400).json({ message: "Only pending orders can be cancelled" });
 
-    // 👇 STOCK RESTORATION LOGIC 👇
+    // STOCK RESTORATION LOGIC
     const products = Array.isArray(order.products) ? order.products : [];
     for (const item of products) {
       const product = await Product.findByPk(item.id);
       if (product) {
-        // Give the stock back to the product
         product.stock = Number(product.stock) + Number(item.quantity);
-        // Reduce the sold count by the cancelled amount
         product.sold = Math.max(0, Number(product.sold) - Number(item.quantity));
         await product.save();
       }
     }
-    // 👆 END STOCK RESTORATION 👆
 
     order.status = "Cancelled";
     await order.save();
@@ -113,7 +110,7 @@ router.put("/:id/status", authMiddleware, async (req, res) => {
     // NOTIFICATION LOGIC
     if (status === "Shipped" || status === "Delivered") {
       await Notification.create({
-        UserId: order.UserId, // The buyer
+        UserId: order.UserId,
         message: `Your order #${order.id} has been ${status.toLowerCase()}!`,
         link: "/orders"
       });
@@ -133,7 +130,16 @@ router.post("/", authMiddleware, async (req, res) => {
   try {
     const { products, totalAmount, shippingAddress } = req.body;
 
+    // VALIDATION
+    if (!products || products.length === 0) {
+      return res.status(400).json({ message: "Cart is empty." });
+    }
+
     for (const item of products) {
+      if (Number(item.quantity) <= 0) {
+        return res.status(400).json({ message: "Quantity must be at least 1." });
+      }
+
       const product = await Product.findByPk(item.id);
       if (!product) return res.status(404).json({ message: `${item.name} not found.` });
       if (product.stock < item.quantity) return res.status(400).json({ message: `${product.name} has only ${product.stock} item(s) left in stock.` });

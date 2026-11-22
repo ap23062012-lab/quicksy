@@ -11,14 +11,10 @@ const router = express.Router();
 router.get("/", async (req, res) => {
   try {
     const products = await Product.findAll();
-
     res.json(products);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -28,36 +24,19 @@ router.get("/", async (req, res) => {
 router.get("/search", async (req, res) => {
   try {
     const query = req.query.query || "";
-
     const products = await Product.findAll({
       where: {
         [Op.or]: [
-          {
-            name: {
-              [Op.like]: `%${query}%`,
-            },
-          },
-          {
-            description: {
-              [Op.like]: `%${query}%`,
-            },
-          },
-          {
-            category: {
-              [Op.like]: `%${query}%`,
-            },
-          },
+          { name: { [Op.like]: `%${query}%` } },
+          { description: { [Op.like]: `%${query}%` } },
+          { category: { [Op.like]: `%${query}%` } },
         ],
       },
     });
-
     res.json(products);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -67,43 +46,27 @@ router.get("/search", async (req, res) => {
 router.get("/my-products", authMiddleware, async (req, res) => {
   try {
     const products = await Product.findAll({
-      where: {
-        UserId: req.user.id,
-      },
+      where: { UserId: req.user.id },
     });
-
     res.json(products);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 // ==============================
 // GET SINGLE PRODUCT
-// IMPORTANT: KEEP THIS BELOW
-// /search and /my-products
+// IMPORTANT: KEEP THIS BELOW /search and /my-products
 // ==============================
 router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({
-        message: "Product not found",
-      });
-    }
-
+    if (!product) return res.status(404).json({ message: "Product not found" });
     res.json(product);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -112,40 +75,32 @@ router.get("/:id", async (req, res) => {
 // ==============================
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      price,
-      category,
-      image,
-      stock,
-      exchangeAvailable,
-    } = req.body;
+    const { name, description, price, category, image, stock, exchangeAvailable } = req.body;
 
     if (req.user.role !== "seller") {
-      return res.status(403).json({
-        message: "Only sellers can add products",
-      });
+      return res.status(403).json({ message: "Only sellers can add products" });
     }
 
+    // VALIDATION
+    if (!name || name.trim() === "") return res.status(400).json({ message: "Product name is required." });
+    if (price === undefined || Number(price) < 0) return res.status(400).json({ message: "Price cannot be negative." });
+    if (stock === undefined || Number(stock) < 0) return res.status(400).json({ message: "Stock cannot be negative." });
+
     const product = await Product.create({
-  name,
-  description,
-  price,
-  category,
-  image,
-  stock,
-  exchangeAvailable,
-  UserId: req.user.id,
-});
+      name,
+      description,
+      price: Number(price),
+      category,
+      image,
+      stock: Number(stock),
+      exchangeAvailable,
+      UserId: req.user.id,
+    });
 
     res.status(201).json(product);
   } catch (error) {
     console.error("PRODUCT ERROR:", error);
-
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -156,45 +111,29 @@ router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
 
-    if (!product) {
-      return res.status(404).json({
-        message: "Product not found",
-      });
-    }
+    if (!product) return res.status(404).json({ message: "Product not found" });
+    if (product.UserId !== req.user.id) return res.status(403).json({ message: "Unauthorized" });
 
-    if (product.UserId !== req.user.id) {
-      return res.status(403).json({
-        message: "Unauthorized",
-      });
-    }
+    const { name, description, price, image, category, stock, exchangeAvailable } = req.body;
 
-    const {
-      name,
-      description,
-      price,
-      image,
-      category,
-      stock,
-      exchangeAvailable,
-    } = req.body;
+    // VALIDATION
+    if (price !== undefined && Number(price) < 0) return res.status(400).json({ message: "Price cannot be negative." });
+    if (stock !== undefined && Number(stock) < 0) return res.status(400).json({ message: "Stock cannot be negative." });
 
     await product.update({
-      name,
-      description,
-      price,
-      image,
-      category,
-      stock,
-      exchangeAvailable,
+      name: name || product.name,
+      description: description || product.description,
+      price: price !== undefined ? Number(price) : product.price,
+      image: image || product.image,
+      category: category || product.category,
+      stock: stock !== undefined ? Number(stock) : product.stock,
+      exchangeAvailable: exchangeAvailable !== undefined ? exchangeAvailable : product.exchangeAvailable,
     });
 
     res.json(product);
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -205,29 +144,14 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id);
 
-    if (!product) {
-      return res.status(404).json({
-        message: "Product not found",
-      });
-    }
-
-    if (product.UserId !== req.user.id) {
-      return res.status(403).json({
-        message: "Unauthorized",
-      });
-    }
+    if (!product) return res.status(404).json({ message: "Product not found" });
+    if (product.UserId !== req.user.id) return res.status(403).json({ message: "Unauthorized" });
 
     await product.destroy();
-
-    res.json({
-      message: "Product deleted successfully",
-    });
+    res.json({ message: "Product deleted successfully" });
   } catch (error) {
     console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
