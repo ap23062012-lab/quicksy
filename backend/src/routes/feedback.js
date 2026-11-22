@@ -1,12 +1,12 @@
 const express = require("express");
 const authMiddleware = require("../middleware/authMiddleware");
-const adminMiddleware = require("../middleware/adminMiddleware"); // Only admin can read all
+const adminMiddleware = require("../middleware/adminMiddleware"); 
 const Feedback = require("../models/Feedback");
 const User = require("../models/User");
 
 const router = express.Router();
 
-// SUBMIT FEEDBACK (Any logged-in user)
+// SUBMIT FEEDBACK
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { message } = req.body;
@@ -30,7 +30,7 @@ router.post("/", authMiddleware, async (req, res) => {
 router.get("/", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const feedbacks = await Feedback.findAll({
-      include: [{ model: User, attributes: ["name", "email", "role"] }],
+      include: [{ model: User, attributes: ["name", "email", "role"], required: false }], // 👈 Added required: false
       order: [["createdAt", "DESC"]],
     });
     res.json(feedbacks);

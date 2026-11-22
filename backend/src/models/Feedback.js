@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config/database");
+const User = require("./User"); // 👈 IMPORT USER
 
 const Feedback = sequelize.define("Feedback", {
   message: {
@@ -7,9 +8,13 @@ const Feedback = sequelize.define("Feedback", {
     allowNull: false,
   },
   UserId: {
-    type: DataTypes.INTEGER, // Links to the user who submitted it
-    allowNull: true, // Allow null just in case, but we will pass it
+    type: DataTypes.INTEGER,
+    allowNull: true, 
   }
 });
+
+// 👇 ADD THE ASSOCIATION HERE 👇
+Feedback.belongsTo(User, { foreignKey: "UserId" });
+User.hasMany(Feedback, { foreignKey: "UserId" });
 
 module.exports = Feedback;
