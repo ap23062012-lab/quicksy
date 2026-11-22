@@ -1,7 +1,7 @@
 const express = require("express");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
-const Notification = require("../models/Notification"); // 👈 Added here
+const Notification = require("../models/Notification");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -49,7 +49,7 @@ router.get("/seller-orders", authMiddleware, async (req, res) => {
 });
 
 // ==============================
-// CUSTOMER CANCEL ORDER
+// CUSTOMER CANCEL ORDER (WITH STOCK RESTORATION)
 // ==============================
 router.put("/:id/cancel", authMiddleware, async (req, res) => {
   try {
@@ -58,6 +58,20 @@ router.put("/:id/cancel", authMiddleware, async (req, res) => {
     if (!order) return res.status(404).json({ message: "Order not found" });
     if (order.UserId !== req.user.id) return res.status(403).json({ message: "Unauthorized" });
     if (order.status !== "Pending") return res.status(400).json({ message: "Only pending orders can be cancelled" });
+
+    // 👇 STOCK RESTORATION LOGIC 👇
+    const products = Array.isArray(order.products) ? order.products : [];
+    for (const item of products) {
+      const product = await Product.findByPk(item.id);
+      if (product) {
+        // Give the stock back to the product
+        product.stock = Number(product.stock) + Number(item.quantity);
+        // Reduce the sold count by the cancelled amount
+        product.sold = Math.max(0, Number(product.sold) - Number(item.quantity));
+        await product.save();
+      }
+    }
+    // 👆 END STOCK RESTORATION 👆
 
     order.status = "Cancelled";
     await order.save();
@@ -96,7 +110,7 @@ router.put("/:id/status", authMiddleware, async (req, res) => {
 
     await order.save();
 
-    // 👇 NOTIFICATION LOGIC HERE 👇
+    // NOTIFICATION LOGIC
     if (status === "Shipped" || status === "Delivered") {
       await Notification.create({
         UserId: order.UserId, // The buyer
