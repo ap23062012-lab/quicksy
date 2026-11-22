@@ -7,6 +7,7 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
+  const [feedbacks, setFeedbacks] = useState<any[]>([]); // 👈 NEW STATE
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,15 +20,17 @@ export default function AdminDashboard() {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
-      const [usersRes, productsRes, ordersRes] = await Promise.all([
+      const [usersRes, productsRes, ordersRes, feedbackRes] = await Promise.all([
         fetch("https://quicksy-5xdh.onrender.com/api/v1/admin/users", { headers }),
         fetch("https://quicksy-5xdh.onrender.com/api/v1/admin/products", { headers }),
         fetch("https://quicksy-5xdh.onrender.com/api/v1/admin/orders", { headers }),
+        fetch("https://quicksy-5xdh.onrender.com/api/v1/feedback", { headers }), // 👈 FETCH FEEDBACK
       ]);
 
       if (usersRes.ok) setUsers(await usersRes.json());
       if (productsRes.ok) setProducts(await productsRes.json());
       if (ordersRes.ok) setOrders(await ordersRes.json());
+      if (feedbackRes.ok) setFeedbacks(await feedbackRes.json());
       
       if (!usersRes.ok) {
         alert("Access Denied. Are you an admin?");
@@ -74,6 +77,8 @@ export default function AdminDashboard() {
         <button onClick={() => setActiveTab("users")} className={`px-4 py-2 md:px-6 rounded-lg text-sm md:text-base font-bold ${activeTab === "users" ? "bg-blue-600 text-white" : "bg-white text-gray-700 shadow"}`}>Users ({users.length})</button>
         <button onClick={() => setActiveTab("products")} className={`px-4 py-2 md:px-6 rounded-lg text-sm md:text-base font-bold ${activeTab === "products" ? "bg-blue-600 text-white" : "bg-white text-gray-700 shadow"}`}>Products ({products.length})</button>
         <button onClick={() => setActiveTab("orders")} className={`px-4 py-2 md:px-6 rounded-lg text-sm md:text-base font-bold ${activeTab === "orders" ? "bg-blue-600 text-white" : "bg-white text-gray-700 shadow"}`}>Orders ({orders.length})</button>
+        {/* 👇 NEW TAB 👇 */}
+        <button onClick={() => setActiveTab("feedback")} className={`px-4 py-2 md:px-6 rounded-lg text-sm md:text-base font-bold ${activeTab === "feedback" ? "bg-blue-600 text-white" : "bg-white text-gray-700 shadow"}`}>Feedback ({feedbacks.length})</button>
       </div>
 
       {/* USERS TAB */}
@@ -160,7 +165,6 @@ export default function AdminDashboard() {
                      <span className="bg-gray-200 px-2 py-1 rounded text-xs md:text-sm">{o.status}</span>
                   </td>
                   <td className="p-3">
-                    {/* 👇 ADDED IMAGE PREVIEWS IN ADMIN ORDERS 👇 */}
                     <div className="flex gap-1">
                       {o.products && o.products.slice(0, 3).map((p: any, i: number) => (
                          p.image ? (
@@ -177,6 +181,36 @@ export default function AdminDashboard() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* FEEDBACK TAB */}
+      {activeTab === "feedback" && (
+        <div className="bg-white rounded-xl shadow p-4 md:p-6 overflow-x-auto">
+          {feedbacks.length === 0 ? (
+             <div className="text-center p-6 text-gray-500">No feedback received yet.</div>
+          ) : (
+            <table className="w-full text-left border-collapse min-w-[600px]">
+              <thead>
+                <tr className="border-b bg-gray-50 text-sm md:text-base">
+                  <th className="p-3">User</th>
+                  <th className="p-3">Role</th>
+                  <th className="p-3">Message</th>
+                  <th className="p-3">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {feedbacks.map((f) => (
+                  <tr key={f.id} className="border-b text-sm md:text-base">
+                    <td className="p-3 font-bold">{f.User?.name || "Unknown"}</td>
+                    <td className="p-3 capitalize text-gray-500">{f.User?.role || "N/A"}</td>
+                    <td className="p-3 text-gray-800 break-words max-w-xs whitespace-pre-wrap">{f.message}</td>
+                    <td className="p-3 text-gray-400">{new Date(f.createdAt).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
 
