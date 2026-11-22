@@ -24,11 +24,19 @@ export default function ForgotPasswordPage() {
       );
 
       const data = await res.json();
-      setMessage(data.message);
+      
+      if (res.ok) {
+        alert("✅ Email sent successfully! Check your Gmail inbox (and Spam folder).");
+        setMessage("✅ Email sent! Please check your inbox.");
+      } else {
+        alert(`❌ Error: ${data.message}`);
+        setMessage(`❌ ${data.message}`);
+      }
     } catch (error) {
+      alert("❌ Server error. Please try again.");
       setMessage("❌ Server error");
     } finally {
-      setLoading(false);
+      setLoading(false); // 👈 This makes sure the button resets!
     }
   };
 
@@ -50,13 +58,17 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-black text-white p-3 rounded hover:bg-gray-800 transition"
+          className={`w-full text-white p-3 rounded font-bold transition ${
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-black hover:bg-gray-800"
+          }`}
         >
-          {loading ? "Sending Link..." : "Send Reset Link"}
+          {loading ? "Sending Link (Please wait 10s)..." : "Send Reset Link"}
         </button>
 
         {message && (
-          <p className="mt-4 text-center font-semibold text-green-600">{message}</p>
+          <p className={`mt-4 text-center font-semibold ${message.includes("✅") ? "text-green-600" : "text-red-600"}`}>
+            {message}
+          </p>
         )}
 
         <div className="mt-6 text-center">
