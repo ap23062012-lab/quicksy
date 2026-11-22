@@ -34,15 +34,11 @@ export default function PrivacyModal() {
         <div className="p-6 overflow-y-auto text-sm text-gray-700 space-y-4 flex-1">
           <p><strong>1. Data Protection & Privacy:</strong> QUICKSY collects basic user data (Name, Email, Address, Order History) to facilitate buying and selling. We do not sell your personal data to third parties. Your data is stored securely using encrypted cloud databases. By using this platform, you agree to the collection of this data for operational purposes.</p>
           
-          <p><strong>2. Seller & Admin Responsibilities:</strong> Sellers are solely responsible for the accuracy of their product listings, images, and pricing. Admins reserve the right to remove any listing or ban any user that violates community guidelines, uploads illegal content, or attempts to manipulate the platform. </p>
+          <p><strong>2. Seller & Admin Responsibilities:</strong> Sellers are solely responsible for the accuracy of their product listings, images, and pricing. Admins reserve the right to remove any listing or ban any user that violates community guidelines, uploads illegal content, or attempts to manipulate the platform.</p>
           
           <p><strong>3. Company Disclaimer:</strong> QUICKSY is a marketplace connecting buyers and sellers. We are <strong>not responsible</strong> for the actual physical quality, safety, or legality of the items sold. We are not liable for disputes regarding shipping delays, lost packages, or financial losses incurred during transactions. Users buy and sell at their own risk.</p>
 
-          <p><strong>4. Pros and Cons for Beta Users:</strong> <br/>
-          <em>Pros:</em> Free to use during Beta, direct connection between buyers and sellers, easy returns/exchanges management. <br/>
-          <em>Cons:</em> Automated payments and courier tracking are currently disabled/offline during the Beta. Users must coordinate shipping and payments manually until further notice.</p>
-
-          <p><strong>5. Account Security:</strong> You are responsible for maintaining the confidentiality of your password. Notify us immediately if you suspect unauthorized access to your account.</p>
+          <p><strong>4. Account Security:</strong> You are responsible for maintaining the confidentiality of your password. Notify us immediately if you suspect unauthorized access to your account.</p>
         </div>
 
         <div className="p-6 border-t bg-gray-50 rounded-b-xl">
@@ -54,7 +50,7 @@ export default function PrivacyModal() {
               className="mt-1 w-5 h-5 cursor-pointer accent-blue-600"
             />
             <span className="text-sm font-semibold text-gray-800 select-none">
-              I have read, understood, and agree to the Privacy Policy, Terms of Service, and the Beta disclaimers.
+              I have read, understood, and agree to the Privacy Policy and Terms of Service.
             </span>
           </label>
 
