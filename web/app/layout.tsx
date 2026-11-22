@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
@@ -14,9 +14,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// 👇 ADDED PWA METADATA HERE 👇
 export const metadata: Metadata = {
   title: "Quicksy",
   description: "Quicksy Full Stack App",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Quicksy",
+  },
+};
+
+// 👇 ADDED VIEWPORT CONFIGURATION 👇
+export const viewport: Viewport = {
+  themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -29,10 +44,25 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
+      <head>
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+      </head>
       <body className="min-h-screen bg-gray-100 text-black">
-        {/* 👇 ADDED PRIVACY MODAL HERE 👇 */}
-        <PrivacyModal /> 
         
+        {/* 👇 SERVICE WORKER SCRIPT (Makes install work on Android) 👇 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js');
+                });
+              }
+            `,
+          }}
+        />
+
+        <PrivacyModal /> 
         <Navbar />
         {children}
       </body>
