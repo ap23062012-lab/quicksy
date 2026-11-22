@@ -15,6 +15,7 @@ const reviewRoutes = require("./routes/review");
 const returnRoutes = require("./routes/return");
 const adminRoutes = require("./routes/admin"); // 👈 ADDED THIS LINE
 const notificationRoutes = require("./routes/notification");
+const feedbackRoutes = require("./routes/feedback");
 
 // MODELS
 require("./models/User");
@@ -27,6 +28,7 @@ require("./models/Review");
 require("./models/ReturnRequest");
 require("./models/ExchangeRequest");
 require("./models/Notification");
+require("./models/Feedback");
 
 const app = express();
 
@@ -47,6 +49,7 @@ app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/returns", returnRoutes);
 app.use("/api/v1/admin", adminRoutes); // 👈 ADDED THIS LINE
 app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/feedback", feedbackRoutes);
 
 // HEALTH CHECK
 app.get("/api/v1/health", (req, res) => {
