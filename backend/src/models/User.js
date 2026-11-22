@@ -20,8 +20,17 @@ const User = sequelize.define("User", {
     allowNull: true,
   },
   role: {
-    type: DataTypes.ENUM("customer", "seller", "admin"), // 👈 ADDED ADMIN HERE
+    type: DataTypes.ENUM("customer", "seller", "admin"),
     defaultValue: "customer",
+  },
+  // 👇 ADDED THESE TWO FIELDS 👇
+  resetPasswordToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  resetPasswordExpire: {
+    type: DataTypes.DATE,
+    allowNull: true,
   },
 });
 
