@@ -55,10 +55,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 rounded-xl shadow-md w-[350px]"
+        className="bg-white p-8 rounded-xl shadow-md w-full max-w-[350px]"
       >
         <h1 className="text-2xl font-bold mb-6 text-center">
           Login
@@ -70,6 +70,7 @@ export default function LoginPage() {
           className="w-full border p-3 rounded mb-4"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
         <input
@@ -78,26 +79,28 @@ export default function LoginPage() {
           className="w-full border p-3 rounded mb-4"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
 
         <button
           type="submit"
-          className="w-full bg-black text-white p-3 rounded"
+          className="w-full bg-black text-white p-3 rounded hover:bg-gray-800 transition"
         >
           Login
         </button>
 
-        <p className="text-center mt-4">
+        {/* 👇 THIS IS THE FORGOT PASSWORD LINK 👇 */}
+        <div className="text-center mt-5">
           <a
             href="/forgot-password"
-            className="text-blue-600"
+            className="text-blue-600 text-sm font-semibold hover:underline"
           >
             Forgot Password?
           </a>
-        </p>
+        </div>
 
         {message && (
-          <p className="mt-4 text-center">
+          <p className="mt-4 text-center text-sm font-medium">
             {message}
           </p>
         )}
