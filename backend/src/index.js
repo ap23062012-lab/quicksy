@@ -13,7 +13,7 @@ const orderRoutes = require("./routes/order");
 const wishlistRoutes = require("./routes/wishlist");
 const reviewRoutes = require("./routes/review");
 const returnRoutes = require("./routes/return");
-const adminRoutes = require("./routes/admin"); // 👈 ADDED THIS LINE
+const adminRoutes = require("./routes/admin"); 
 const notificationRoutes = require("./routes/notification");
 const feedbackRoutes = require("./routes/feedback");
 
@@ -29,6 +29,12 @@ require("./models/ReturnRequest");
 require("./models/ExchangeRequest");
 require("./models/Notification");
 require("./models/Feedback");
+
+// 👇 THIS IS THE FIX FOR THE FEEDBACK ERROR 👇
+const User = require("./models/User");
+const Feedback = require("./models/Feedback");
+Feedback.belongsTo(User, { foreignKey: "UserId" });
+// 👆 END OF FIX 👆
 
 const app = express();
 
@@ -47,7 +53,7 @@ app.use("/api/v1/order", orderRoutes);
 app.use("/api/v1/wishlist", wishlistRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/returns", returnRoutes);
-app.use("/api/v1/admin", adminRoutes); // 👈 ADDED THIS LINE
+app.use("/api/v1/admin", adminRoutes); 
 app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/feedback", feedbackRoutes);
 
@@ -66,19 +72,11 @@ const startServer = async () => {
     await sequelize.sync({ alter: true });
 
     app.listen(PORT, () => {
-      console.log(
-        `✓ QUICKSY Backend running on port ${PORT}`
-      );
-
-      console.log(
-        `Health check: http://localhost:${PORT}/api/v1/health`
-      );
+      console.log(`✓ QUICKSY Backend running on port ${PORT}`);
+      console.log(`Health check: http://localhost:${PORT}/api/v1/health`);
     });
   } catch (error) {
-    console.error(
-      "✗ Database initialization failed:",
-      error.message
-    );
+    console.error("✗ Database initialization failed:", error.message);
   }
 };
 
